@@ -1,0 +1,43 @@
+<div ui-view></div>
+
+<div nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter" class="col-sm-9  col-md-10  col-md-offset-2 col-sm-offset-2">
+    <div class="page-header">
+        <h1>Загрузка
+            <small>Загрузите подготовленый прайс-лист.</small>
+        </h1>
+    </div>
+
+
+    <input type="file" multiple="multiple" name="avatar" nv-file-select uploader="uploader"/><br/>
+    <ul>
+        <li ng-repeat="item in uploader.queue">
+            Name: <span ng-bind="item.file.name"></span><br/>
+            <button ng-click="item.upload()">upload</button>
+        </li>
+    </ul>
+
+
+
+
+
+    <form name="myForm" novalidate ng-submit="addNewPrice(newPrice, myForm.$valid)">
+    <div class="form-group">
+        <!--<label for="inputPrice"></label>-->
+        <input type="file"  name="avatar" >
+        <p class="help-block">расширение файла .xlsx или .xls </p>
+        <div class="error" ng-show="showError">
+            {{getError(myForm.avatar.$error)}}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-default">{{nameButton}}</button>
+        <div class="well">
+            Message: {{message}}
+            <div>
+                Valid:
+                    <span class="summary" ng-class="myForm.$valid ? 'ng-valid' : 'ng-invalid'">
+                        {{myForm.$valid}}
+                    </span>
+            </div>
+        </div>
+</form>
+    </div>

@@ -6,10 +6,85 @@
  */
 const XlsxPopulate = require('xlsx-populate');
 var fs = require('fs');
-
+var _ = require('lodash');
+//var multer  = require('multer');
+//var upload = multer({ dest: 'uploads/' });
 
 module.exports = {
+    testPrice: function (req, res, next) {
+        if (!req.session.me) {
+            return res.view('page/showhomepage', {layout: 'dashboard', me: null});
+        }
+
+        sails.log(req.body);
+
+        req.file('avatar').upload(function (err, uploadedFiles) {
+            if (err) return res.send(500, err);
+            return res.json({
+                message: uploadedFiles.length + ' file(s) uploaded successfully!',
+                files: uploadedFiles
+            });
+        });
+
+        //req.file('avatar').upload({
+        //    saveAs: function(file, cb) {
+        //        cb(null, file.filename);
+        //    },
+        //    dirname: require('path').resolve(sails.config.appPath, 'assets/images')
+        //}, function whenDone(err, uploadedFiles) { //onUploadComplete
+        //    if (err){
+        //        return res.serverError(err);
+        //    } else{
+        //        return res.view('dashboard', {file:uploadedFiles});
+        //    }
+        //    if (uploadedFiles.length==0) {
+        //        //if no file selected.
+        //        sails.log.info('nothing selected');
+        //        return res.view('dashboard');
+        //    }
+        //
+        //});
+
+
+        //router.get("/download", function (req, res, next) {
+        // Open the workbook.
+        console.log('SRCCCCCCCCCC: ');
+        console.log(req.allParams());
+
+        console.log(req.param('avatar'));
+        //if(!_.isObject(req.param('avatar'))){
+        //    return res.badRequest('Файл не загружен!.');
+        //}
+
+        //XlsxPopulate.fromFileAsync(req.param('avatar'))
+        ////XlsxPopulate.fromFileAsync("ibm.xlsx")
+        //    .then(workbook => {
+        //        // Make edits.
+        //        workbook.sheet(0).cell("A1").value("foo");
+        //
+        //        // Get the output
+        //        return workbook.outputAsync();
+        //    })
+        //    .then(data => {
+        //        // Set the output file name.
+        //        res.attachment("output.xlsx");
+        //
+        //        // Send the workbook.
+        //        res.send(data);
+        //    })
+        //    .catch(next);
+
+        //var user ={'id':1};
+        //req.session.me = user.id;
+        //res.ok();
+        //return res.view({
+        //    me: user
+        //});
+        //});
+    },
     getPrice: function (req, res, next) {
+
+
         Price.find({
             //select: ['vendor', 'description'], // Optional
             where: {

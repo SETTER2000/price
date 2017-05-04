@@ -75,8 +75,8 @@ module.exports.views = {
   *                                                                           *
   ****************************************************************************/
 
-  layout: 'layout',
-
+  //layout: 'layout',
+  layout: 'dashboard',
   /****************************************************************************
   *                                                                           *
   * Partials are simply top-level snippets you can leverage to reuse template *

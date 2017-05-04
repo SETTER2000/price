@@ -1,8 +1,7 @@
 /**
  * Created by apetrov on 03.05.2017.
  */
-
-angular.module('PRICE').controller('PageCtrl', ['$scope', '$http', '$timeout', function ($scope, $http, $timeout) {
+angular.module('PriceModule').controller('PageController', ['$scope', '$http', 'toastr', function($scope, $http, toastr) {
 
     $scope.me = window.SAILS_LOCALS.me;
 

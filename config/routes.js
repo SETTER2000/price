@@ -34,16 +34,17 @@ module.exports.routes = {
 
   'GET /file':'FileController.index',
   'POST /file/upload':'FileController.upload',
-  'GET /': {
-    view: 'homepage',
-    locals: {
-      me: {
-        id: 1,
-        gravatarURL: 'http://www.gravatar.com/avatar/ef3eac6c71fdf24b13db12d8ff8d1264?',
-        email: 'sailsinaction@gmail.com'
-      }
-    }
-  }
+
+  'POST /upload':'PriceController.testPrice',
+
+
+
+  /*************************************************************
+   * Server-rendered HTML Pages                                *
+   *************************************************************/
+  'GET /': 'PageController.showHomePage',
+  'GET /upload':'PageController.showHomePage',
+  'GET /price':'PageController.showHomePage'
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *
