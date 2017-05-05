@@ -1,4 +1,4 @@
-angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource', 'ngAnimate','angularFileUpload'])
+angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource', 'ngAnimate'])
     //.config(function ($routeProvider, $locationProvider) {
     //    $routeProvider
     //
@@ -25,6 +25,15 @@ angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource', 'ngAnima
                 }
             })
             .state('home.upload', {
+                url: 'upload',
+                views: {
+                    '@': {
+                        templateUrl: '/js/public/dashboard/tpl/upload.html',
+                        controller: 'DashboardController'
+                    }
+                }
+            })
+            .state('home.file.upload', {
                 url: 'upload',
                 views: {
                     '@': {
@@ -122,6 +131,20 @@ angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource', 'ngAnima
         //    })
         ;
     })
+    .directive('file', function () {
+        return {
+            scope: {
+                file: '='
+            },
+            link: function (scope, el, attrs) {
+                el.bind('change', function (event) {
+                    var file = event.target.files[0];
+                    scope.file = file ? file : undefined;
+                    scope.$apply();
+                });
+            }
+        };
+    });
     //.constant('CONF_MODULE', {baseUrl: '/price/:priceId'})
     //.factory('Prices', function ($resource, $state, CONF_MODULE) {
     //    var Prices = $resource(

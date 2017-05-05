@@ -16,9 +16,14 @@ module.exports = {
             return res.view('page/showhomepage', {layout: 'dashboard', me: null});
         }
 
+        sails.log('BODY');
         sails.log(req.body);
 
-        req.file('avatar').upload(function (err, uploadedFiles) {
+
+
+        req.file('avatar').upload({
+            dirname: require('path').resolve(sails.config.appPath, 'assets/images')
+        },function (err, uploadedFiles) {
             if (err) return res.send(500, err);
             return res.json({
                 message: uploadedFiles.length + ' file(s) uploaded successfully!',
@@ -48,10 +53,10 @@ module.exports = {
 
         //router.get("/download", function (req, res, next) {
         // Open the workbook.
-        console.log('SRCCCCCCCCCC: ');
-        console.log(req.allParams());
+//        console.log('SRCCCCCCCCCC: ');
+//        console.log(req.allParams());
 
-        console.log(req.param('avatar'));
+//        console.log(req.param('avatar'));
         //if(!_.isObject(req.param('avatar'))){
         //    return res.badRequest('Файл не загружен!.');
         //}

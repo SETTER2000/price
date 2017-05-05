@@ -42,9 +42,11 @@ module.exports.routes = {
   /*************************************************************
    * Server-rendered HTML Pages                                *
    *************************************************************/
+  //'GET /': 'PageController',
   'GET /': 'PageController.showHomePage',
   'GET /upload':'PageController.showHomePage',
-  'GET /price':'PageController.showHomePage'
+  'GET /price':'PageController.showHomePage',
+  'GET /file/upload':'PageController.showHomePage'
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

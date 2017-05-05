@@ -24,7 +24,7 @@ module.exports.http = {
     middleware: {
 
 
-        multer: require('multer'),
+
 
 
         /***************************************************************************
@@ -43,7 +43,6 @@ module.exports.http = {
             'handleBodyParserError',
             'compress',
             'methodOverride',
-            'multer',
             'poweredBy',
             '$custom',
             'router',
