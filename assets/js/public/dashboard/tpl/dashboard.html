@@ -1,22 +1,157 @@
-
 <div ui-view></div>
+<div nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">
+<!--<div class="navbar navbar-default" >-->
+    <!--<div class="navbar-header">-->
+        <!--<a class="navbar-brand" href="https://github.com/nervgh/angular-file-upload">Angular File Upload</a>-->
+    <!--</div>-->
+    <!--<div class="navbar-collapse collapse">-->
+        <!--<ul class="nav navbar-nav">-->
+            <!--<li class="active dropdown">-->
+                <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">Demos <b class="caret"></b></a>-->
+                <!--<ul class="dropdown-menu">-->
+                    <!--<li class="active"><a href="#">Simple example</a></li>-->
+                    <!--<li><a href="../image-preview">Uploads only images (with canvas preview)</a></li>-->
+                    <!--<li><a href="../without-bootstrap">Without bootstrap example</a></li>-->
+                <!--</ul>-->
+            <!--</li>-->
+            <!--<li><a href="https://github.com/nervgh/angular-file-upload">View on Github</a></li>-->
+            <!--<li><a href="https://raw.githubusercontent.com/nervgh/angular-file-upload/master/dist/angular-file-upload.min.js">Download</a></li>-->
+        <!--</ul>-->
+    <!--</div>-->
+<!--</div>-->
+
+
+
+
+
 
 <div class="col-sm-9  col-md-10  col-md-offset-2 col-sm-offset-2">
     <div class="page-header">
         <h1>Добавить прайс
-            <small>Загрузите подготовленый прайс-лист.</small>
+            <small></small>
         </h1>
     </div>
-    <a href="/upload">Upload</a>
+    <!--<a href="/upload">Upload</a>-->
     <!--action="/file/upload"-->
-    <form  ng-submit="uploadPrice()" name="price" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-            <label for="inputPrice"></label>
-            <input type="file" name="avatar" ng-model="price.src" multiple="multiple">
-            <p class="help-block">расширение файла .xlsx или .xls </p>
+    <!--<form  ng-submit="uploadPrice()" name="price" enctype="multipart/form-data" method="post">-->
+    <!--<div class="form-group">-->
+    <!--<label for="inputPrice"></label>-->
+    <!--<input type="file" name="avatar" ng-model="price.src" multiple="multiple">-->
+    <!--<p class="help-block">расширение файла .xlsx или .xls </p>-->
+    <!--</div>-->
+    <!--<button type="submit" class="btn btn-default">Добавить</button>-->
+    <!--</form>-->
+
+    <div class="row">
+
+        <div class="col-md-3">
+
+            <h3>Выбрать файлы</h3>
+
+            <div ng-show="uploader.isHTML5">
+                <!-- 3. nv-file-over uploader="link" over-class="className" -->
+                <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+                    Зона перетаскивания без фильтра
+                </div>
+
+                <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                <div nv-file-drop="" uploader="uploader" options="{ url: '/foo' }">
+                    <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
+                        Зона перетаскивания с фильтром
+                    </div>
+                </div>
+            </div>
+            Загрузка одного файла
+            <input type="file"  nv-file-select="" uploader="uploader" /><br/>
+            <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+           Загрузка нескольких файлов
+            <input type="file" nv-file-select="" uploader="uploader" multiple  />
+
+
         </div>
-        <button type="submit" class="btn btn-default">Добавить</button>
-    </form>
+
+        <div class="col-md-9" style="margin-bottom: 40px">
+
+            <h3>Очередь загрузки</h3>
+            <p>Длина очереди: {{ uploader.queue.length }}</p>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="50%">Имя</th>
+                    <th ng-show="uploader.isHTML5">Размер</th>
+                    <th ng-show="uploader.isHTML5">Прогресс</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in uploader.queue">
+                    <td><strong>{{ item.file.name }}</strong></td>
+                    <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                    <td ng-show="uploader.isHTML5">
+                        <div class="progress" style="margin-bottom: 0;">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                        <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                        <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                    </td>
+                    <td nowrap>
+                        <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                            <span class="glyphicon glyphicon-upload"></span> Загрузить
+                        </button>
+                        <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                            <span class="glyphicon glyphicon-ban-circle"></span> Отмена
+                        </button>
+                        <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                            <span class="glyphicon glyphicon-trash"></span> Удалить
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <div>
+                    Прогресс загрузки очереди:
+                    <div class="progress" style="">
+                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                    <span class="glyphicon glyphicon-upload"></span> Загрузить всё
+                </button>
+                <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                    <span class="glyphicon glyphicon-ban-circle"></span> Отменить всё
+                </button>
+                <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                    <span class="glyphicon glyphicon-trash"></span> Очистить всё
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!--<form action="/file/upload" enctype="multipart/form-data" method="post" >-->
+        <!--<div class="form-group">-->
+            <!--<label for="inputPrice"></label>-->
+            <!--&lt;!&ndash;<input id="inputPrice" type="file"  name="avatar" multiple="multiple">&ndash;&gt;-->
+            <!--&lt;!&ndash;<input id="inputPrice" type="file" class="input" name="avatar" multiple="multiple">&ndash;&gt;-->
+            <!--<input type="file"  class="input" name="avatar" multiple onchange="angular.element(this).scope().fileNameChanged(this)">-->
+        <!--</div>-->
+
+        <!--{{namesString}}-->
+        <!--<p ng-bind="messMimeErr"></p>-->
+
+        <!--<button type="submit" ng-model="button" ng-disabled="isMIME" class="btn btn-default">{{nameButton}}</button>-->
+    <!--</form>-->
+
+
     <!--<div ui-view="viewC"></div>-->
     <!--<div ui-view="viewD"></div>-->
     <!--<div class="row placeholders">-->
@@ -170,4 +305,5 @@
     <!--</tbody>-->
     <!--</table>-->
     <!--</div>-->
+</div>
 </div>

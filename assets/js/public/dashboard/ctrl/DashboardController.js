@@ -1,11 +1,189 @@
 angular.module('DashboardModule')
     //.constant('baseUrl', 'http://localhost:1337')
-    .controller('DashboardController', ['$scope', '$window', '$state', '$http',  '$stateParams', 'toastr',  '$resource', '$rootScope',
-        function ($scope, $window, $state, $http, angularFileUpload, $stateParams, toastr,  $resource, $rootScope) {
+    .controller('DashboardController', ['$scope', '$window', '$state', '$http','FileUploader', '$stateParams', 'toastr', '$resource', '$rootScope',
+        function ($scope, $window, $state, $http,FileUploader, angularFileUpload, $stateParams, toastr, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
             $scope.nameButton = 'Добавить';
+            $scope.isMIME = 1;
+            $scope.messMimeErr = '';
+
+            var uploader = $scope.uploader = new FileUploader({
+                url: '/file/upload'
+            });
+            // a sync filter
+            uploader.filters.push({
+                name: 'syncFilter',
+                fn: function(item /*{File|FileLikeObject}*/, options) {
+                    console.log('syncFilter');
+                    return this.queue.length < 10;
+                }
+            });
+            // an async filter
+            uploader.filters.push({
+                name: 'asyncFilter',
+                fn: function(item /*{File|FileLikeObject}*/, options, deferred) {
+                    console.log('asyncFilter');
+                    setTimeout(deferred.resolve, 1e3);
+                }
+            });
+            // CALLBACKS
+
+            uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+                console.info('onWhenAddingFileFailed', item, filter, options);
+            };
+            uploader.onAfterAddingFile = function(fileItem) {
+                console.info('onAfterAddingFile', fileItem);
+            };
+            uploader.onAfterAddingAll = function(addedFileItems) {
+                console.info('onAfterAddingAll', addedFileItems);
+            };
+            uploader.onBeforeUploadItem = function(item) {
+                console.info('onBeforeUploadItem', item);
+            };
+            uploader.onProgressItem = function(fileItem, progress) {
+                console.info('onProgressItem', fileItem, progress);
+            };
+            uploader.onProgressAll = function(progress) {
+                console.info('onProgressAll', progress);
+            };
+            uploader.onSuccessItem = function(fileItem, response, status, headers) {
+                console.info('onSuccessItem', fileItem, response, status, headers);
+            };
+            uploader.onErrorItem = function(fileItem, response, status, headers) {
+                console.info('onErrorItem', fileItem, response, status, headers);
+            };
+            uploader.onCancelItem = function(fileItem, response, status, headers) {
+                console.info('onCancelItem', fileItem, response, status, headers);
+            };
+            uploader.onCompleteItem = function(fileItem, response, status, headers) {
+                console.info('onCompleteItem', fileItem, response, status, headers);
+            };
+            uploader.onCompleteAll = function() {
+                console.info('onCompleteAll');
+            };
+
+            console.info('uploader', uploader);
 
 
+
+
+
+
+
+
+
+
+
+
+            toastr.options = {
+                "closeButton": true
+                //"debug": false,
+                //"newestOnTop": false,
+                //"progressBar": false,
+                //"positionClass": "toast-top-right",
+                //"preventDuplicates": false,
+                //"onclick": null,
+                //"showDuration": "300",
+                //"hideDuration": "1000",
+                //"timeOut": "5000",
+                //"extendedTimeOut": "1000",
+                //"showEasing": "swing",
+                //"hideEasing": "linear",
+                //"showMethod": "fadeIn",
+                //"hideMethod": "fadeOut"
+            };
+
+
+
+
+
+
+            $scope.$watch('isMIME', function (value) {
+                $scope.isMIME = value;
+            });
+
+            //$scope.updateSize = function updateSize() {
+            //    $scope.nameButton = 'xvbcbc';
+            //    var file = document.getElementById("inputPrice").files[0],
+            //        ext = "не определилось",
+            //        parts = file.name.split('.');
+            //    if (parts.length > 1) ext = parts.pop();
+            //
+            //    if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
+            //        $scope.isMIME = 0;
+            //    } else {
+            //        var messMimeErr = 'Ошибка: Расширение не поддерживается.';
+            //    }
+            //
+            //    document.getElementById("e-fileinfo").innerHTML = [
+            //        "Размер файла: " + file.size + " B",
+            //        "Расширение: " + ext,
+            //        //"MIME тип: " + file.type,
+            //        messMimeErr
+            //
+            //    ].join("<br>");
+            //};
+
+            //document.getElementById('inputPrice').addEventListener('change', $scope.updateSize);
+            $scope.kb = function (ch) {
+                var size = (ch / 1024).toFixed(2);
+                if (size > 1023) {
+                    return ((ch / 1024) / 1024).toFixed(2) + " Mb";
+                }
+                return size + " Kb";
+            };
+
+            $scope.fileNameChanged = function (ele) {
+                var files = ele.files;
+                var l = files.length;
+                var namesArr = [];
+
+                for (var i = 0; i < l; i++) {
+
+                    if (files[i].type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                        $scope.isMIME = 0;
+                        $scope.messMimeErr = '';
+                        namesArr.push('Добавлен файл: '+files[i].name + ' (' + $scope.kb(files[i].size) + ')');
+
+
+                    } else {
+                        $scope.isMIME = 1;
+                        $scope.messMimeErr = 'Ошибка: Расширение не поддерживается. Создайте файл с расширением xlsx';
+                    }
+
+                    //namesArr.push(files[i].name,files[i].type,files[i].size + " B");
+                }
+
+                //console.log(ele);
+                var promise = $http.post('/file/upload',ele);
+                //console.log(promise);
+                promise.then(fullfilled, rejected);
+
+                //toastr.success('Объект удалён.', 'OK! ');
+
+                $scope.namesString = namesArr.join(' ,');
+                $scope.$apply();
+                //console.log($scope.namesString);
+            };
+
+            //toastr.error(err.data.details, 'Ошибка - 889! ' + err.data.message);
+            //$scope.isMI = function () {
+            //
+            //    $scope.isMIME = true;
+            //};
+
+
+            //$scope.updateSize = function () {
+            //    var file = document.getElementById("uploadInput").files[0],
+            //        ext = "не определилось",
+            //        parts = file.name.split('.');
+            //    if (parts.length > 1) ext = parts.pop();
+            //    document.getElementById("e-fileinfo").innerHTML = [
+            //        "Размер файла: " + file.size + " B",
+            //        "Расширение: " + ext,
+            //        "MIME тип: " + file.type
+            //    ].join("<br>");
+            //};
             //var uploader = $scope.uploader = new FileUploader({
             //    url: '/upload'
             //});
@@ -66,14 +244,9 @@ angular.module('DashboardModule')
             ////console.log($scope.price);
 
             $scope.addNewPrice = function (newPrice, isValid) {
-                var g = $scope.file;
-                console.log('FILE:');
-                console.log(g);
-                console.log('newPrice:');
-                console.log(newPrice);
 
-                var newPrice2 = {};
-                newPrice2.avatar2 = g;
+
+
 
                 var req = {
                     method: 'POST',
@@ -81,10 +254,7 @@ angular.module('DashboardModule')
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
-                    data: {
-                        test: 'test',
-                        gi: g
-                    }
+                    data: newPrice
                     //transformRequest: function (data, headersGetter) {
                     //    var formData = new FormData();
                     //    angular.forEach(data, function (value, key) {

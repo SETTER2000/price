@@ -1,8 +1,9 @@
 angular.module('PriceModule', [
         'ui.router',
+        'toastr',
         'ngResource',
         'ngAnimate',
-        'angularFileUpload',
+
         'DashboardModule'
     ])
     .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
