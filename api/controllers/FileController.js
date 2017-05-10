@@ -25,7 +25,7 @@ module.exports = {
     },
     upload: function (req, res) {
         req.file('file').upload({
-                dirname: require('path').resolve(sails.config.appPath, 'assets/images')
+                dirname: require('path').resolve(sails.config.appPath, 'assets/images/price')
             },
             function (err, files) {
                 if (err) return res.serverError(err);
