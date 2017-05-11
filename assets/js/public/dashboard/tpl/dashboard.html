@@ -113,7 +113,8 @@
                         <!--&lt;!&ndash;</button>&ndash;&gt;-->
                     <!--</td>-->
                     <td class="text-center">
-                        <button type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
+                        <!--<a href="/images/price/report/{{pathToReport}}" download >go</a>-->
+                        <button ng-if="goReport" ng-click="getReport()" type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
                             <span  class="glyphicon glyphicon-list-alt "></span> Отчёт
                         </button>
                     </td>

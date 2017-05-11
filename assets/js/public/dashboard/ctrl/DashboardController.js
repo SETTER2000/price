@@ -6,14 +6,14 @@ angular.module('DashboardModule')
             $scope.nameButton = 'Добавить';
             $scope.isMIME = 1;
             $scope.messMimeErr = '';
-
+            $scope.goReport = false;
 
             /**
              * Название вендоров
              * По этому массиву будет вестись проверка соответствия имён загружаемых файлов
              * @type {string[]}
              */
-            var arrNameVendorIdeal =  [
+            var arrNameVendorIdeal = [
                 'Allied Telesis',
                 'Aquarius',
                 'Avaya',
@@ -34,7 +34,11 @@ angular.module('DashboardModule')
                 'Zyxel'
             ];
 
-
+            $scope.getReport = function () {
+                $http.post('/get/report', {
+                    fileName: $scope.pathToReport
+                });
+            };
 
             //$scope.info = {};
             //$scope.info.description ='';
@@ -57,7 +61,7 @@ angular.module('DashboardModule')
             //};
             var uploader = $scope.uploader = new FileUploader({
                 url: '/file/upload',
-                autoUpload:true
+                autoUpload: true
             });
             // a sync filter
             uploader.filters.push({
@@ -101,10 +105,10 @@ angular.module('DashboardModule')
             uploader.filters.push({
                 name: 'nameFileFilter',
                 fn: function (item) {
-                        if ($scope.rs = arrNameVendorIdeal.indexOf(item.name.slice(0, -5)) < 0) {
-                            toastr.error('Имя файла должно соответствовать названию вендора.', 'Ошибка!');
-                            return false;
-                        }
+                    if ($scope.rs = arrNameVendorIdeal.indexOf(item.name.slice(0, -5)) < 0) {
+                        toastr.error('Имя файла должно соответствовать названию вендора.', 'Ошибка!');
+                        return false;
+                    }
                     return true;
                 }
             });
@@ -142,8 +146,10 @@ angular.module('DashboardModule')
             };
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 console.info('onCompleteItem', fileItem, response, status, headers);
-                if(status > 200){
-                    toastr.error(response, 'Ошибка! Статус ' + status);
+                if (status > 200) {
+                    toastr.error(response.message, 'Ошибка! Статус ' + status);
+                    $scope.pathToReport = response.pathToReport;
+                    $scope.goReport = response.goReport;
                     return;
                 }
                 toastr.success(response, 'Ok! Статус ' + status);

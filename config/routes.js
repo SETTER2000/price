@@ -34,6 +34,7 @@ module.exports.routes = {
 
   //'GET /file':'FileController.index',
   'POST /file/upload':'FileController.upload',
+  'POST /get/report':'FileController.avatar',
 
   'POST /upload':'PriceController.testPrice',
 

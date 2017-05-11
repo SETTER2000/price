@@ -6,9 +6,9 @@
  */
 const XlsxPopulate = require('xlsx-populate');
 var fs = require('fs');
+const path = require('path');
+
 //var _ = require('lodash');
-
-
 
 
 module.exports = {
@@ -20,17 +20,28 @@ module.exports = {
                 if (err) return res.serverError(err);
                 if (_.isUndefined(files[0])) return res.notFound('Нет файла!');
 
-
-                Array.prototype.diff = function(a) {
-                    return this.filter(function(i){return a.indexOf(i) < 0;});
+                /**
+                 * Путь и название файла отчета по загрузке
+                 * @type {string}
+                 */
+                const nameFileUpload = path.basename(files[0].fd);
+                const pathToReport = "assets/images/price/report/" + nameFileUpload;
+                Array.prototype.diff = function (a) {
+                    return this.filter(function (i) {
+                        return a.indexOf(i) < 0;
+                    });
                 };
                 //sails.log('FILE: ');
-                //sails.log(files[0]);
+                //sails.log(path.basename(files[0].fd));
 
 
                 // Загрузить существующую книгу
                 XlsxPopulate.fromFileAsync(files[0].fd)
                     .then((workbook, reject) => {
+
+
+
+
                         /**
                          * Шаблон названия листа.
                          * Это название должно так же быть и в загружаемом файле.
@@ -76,33 +87,41 @@ module.exports = {
                          *
                          */
                         var rs = arrNameColumnsIdeal.diff(arrNameColumns);
-                        //console.log(rs.length);
-                        if(rs.length == 1){
-                            return res.badRequest('Ошибка в названии столбца ' + rs + '!');
+
+                        if (rs.length == 1) {
+                            const cll = workbook.sheet("Лист1").row(1).find(rs[0]);
+                            //console.log(cll);
+                            //console.log(cll[0]._columnNumber);
+
+                            workbook.sheet("Лист1").row(1).cell(cll[0]._columnNumber).style({bold: true, fontColor: 'f90b0b'});
+
+                            workbook.toFileAsync(pathToReport);
+
+
+                            return res.badRequest({
+                                message: 'Ошибка в названии столбца ' + rs + '!',
+                                pathToReport: nameFileUpload,
+                                goReport: true
+                            });
                         }
 
-                        if(rs.length > 1 ){
+                        if (rs.length > 1) {
+
+
                             return res.badRequest('Есть ошибки в названии столбцов ' + rs + '!');
                         }
 
 
-
-
-                        
                         // Получить значение ячейки
                         const value = workbook.sheet("Лист1").cell("A1").value();
 
-                        //sails.log('arrNameColumns');
-                        //sails.log(arrNameColumns);
-                        //
-                        //sails.log('VALUE');
-                        //sails.log(value);
-                        //
-                        //sails.log('arrNameColumns');
-                        //sails.log(arrNameColumns);
-                        //sails.log('nameList');
-                        //sails.log(nameList);
-                        res.ok('Всё ОК!');
+
+                        // Отобразить значения колонки G
+                        const value3 = workbook.sheet("Лист1").column("G").width(25).hidden(false);
+                        //sails.log('value3');
+                        //sails.log(value3);
+
+                        res.ok();
                         //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });
 
@@ -116,6 +135,22 @@ module.exports = {
 
 
             });
+    },
+
+    avatar: function (req, res){
+
+        var SkipperDisk = require('skipper-disk');
+        var fileAdapter = SkipperDisk(/* optional opts */);
+
+        // set the filename to the same file as the user uploaded
+        res.set("Content-disposition", "attachment; filename='/host/home/price/www/assets/images/price/report/" + req.param('fileName') + "'");
+
+        // Stream the file down
+        fileAdapter.read("/images/price/report/" + req.param('fileName'))
+            .on('error', function (err){
+                return res.serverError(err);
+            })
+            .pipe(res);
     }
 };
 
