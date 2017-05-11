@@ -50,21 +50,21 @@
 
             <div ng-show="uploader.isHTML5">
                 <!-- 3. nv-file-over uploader="link" over-class="className" -->
-                <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
-                    Зона перетаскивания без фильтра
-                </div>
+                <!--<div class="well my-drop-zone" nv-file-over="" uploader="uploader">-->
+                    <!--Зона перетаскивания без фильтра-->
+                <!--</div>-->
 
                 <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
-                <div nv-file-drop="" uploader="uploader" options="{ url: '/foo' }">
+                <div nv-file-drop="" uploader="uploader" options="{ url: '/file/upload' }">
                     <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
-                        Зона перетаскивания с фильтром
+                        Drag and Drop
                     </div>
                 </div>
             </div>
-            Загрузка одного файла
-            <input type="file"  nv-file-select="" uploader="uploader" /><br/>
+            <!--Загрузка одного файла-->
+            <!--<input type="file"  nv-file-select="" uploader="uploader" /><br/>-->
             <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
-           Загрузка нескольких файлов
+
             <input type="file" nv-file-select="" uploader="uploader" multiple  />
 
 
@@ -81,8 +81,9 @@
                     <th width="50%">Имя</th>
                     <th ng-show="uploader.isHTML5">Размер</th>
                     <th ng-show="uploader.isHTML5">Прогресс</th>
-                    <th>Статус</th>
-                    <th>Действие</th>
+                    <th class="text-center">Статус</th>
+                    <!--<th>Описание ошибки</th>-->
+                    <th class="text-center">Получить отчёт</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -95,19 +96,25 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                        <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok  text-success"></i></span>
                         <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                        <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        <span ng-show="item.isError"><i class="glyphicon glyphicon-remove text-danger"></i></span>
                     </td>
-                    <td nowrap>
-                        <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                            <span class="glyphicon glyphicon-upload"></span> Загрузить
-                        </button>
-                        <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                            <span class="glyphicon glyphicon-ban-circle"></span> Отмена
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-                            <span class="glyphicon glyphicon-trash"></span> Удалить
+                    <!--<td >-->
+
+                        <!--&lt;!&ndash;<button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<span class="glyphicon glyphicon-upload"></span> Загрузить&ndash;&gt;-->
+                        <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<span class="glyphicon glyphicon-ban-circle"></span> Отмена&ndash;&gt;-->
+                        <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<span class="glyphicon glyphicon-trash"></span> Удалить&ndash;&gt;-->
+                        <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                    <!--</td>-->
+                    <td class="text-center">
+                        <button type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
+                            <span  class="glyphicon glyphicon-list-alt "></span> Отчёт
                         </button>
                     </td>
                 </tr>
@@ -121,12 +128,12 @@
                         <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
-                    <span class="glyphicon glyphicon-upload"></span> Загрузить всё
-                </button>
-                <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
-                    <span class="glyphicon glyphicon-ban-circle"></span> Отменить всё
-                </button>
+                <!--<button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">-->
+                    <!--<span class="glyphicon glyphicon-upload"></span> Загрузить-->
+                <!--</button>-->
+                <!--<button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">-->
+                    <!--<span class="glyphicon glyphicon-ban-circle"></span> Отменить всё-->
+                <!--</button>-->
                 <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
                     <span class="glyphicon glyphicon-trash"></span> Очистить всё
                 </button>

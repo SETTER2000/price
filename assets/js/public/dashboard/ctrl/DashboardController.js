@@ -1,78 +1,159 @@
 angular.module('DashboardModule')
     //.constant('baseUrl', 'http://localhost:1337')
-    .controller('DashboardController', ['$scope', '$window', '$state', '$http','FileUploader', '$stateParams', 'toastr', '$resource', '$rootScope',
-        function ($scope, $window, $state, $http,FileUploader, angularFileUpload, $stateParams, toastr, $resource, $rootScope) {
+    .controller('DashboardController', ['$scope', '$http', 'toastr', '$window', '$state', 'FileUploader', '$stateParams', '$resource', '$rootScope',
+        function ($scope, $http, toastr, $window, $state, FileUploader, angularFileUpload, $stateParams, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
             $scope.nameButton = 'Добавить';
             $scope.isMIME = 1;
             $scope.messMimeErr = '';
 
+
+            /**
+             * Название вендоров
+             * По этому массиву будет вестись проверка соответствия имён загружаемых файлов
+             * @type {string[]}
+             */
+            var arrNameVendorIdeal =  [
+                'Allied Telesis',
+                'Aquarius',
+                'Avaya',
+                'ClearOne',
+                'Delta Electronics',
+                'Eaton',
+                'Fluke Ind',
+                'Fluke Net',
+                'Fujitsu',
+                'Huawei',
+                'Huawei-ВКС',
+                'IBM',
+                'Juniper',
+                'MyToner',
+                'OKI',
+                'RIT',
+                'Vertiv',
+                'Zyxel'
+            ];
+
+
+
+            //$scope.info = {};
+            //$scope.info.description ='';
+            //toastr.options = {
+            //    "closeButton": false,
+            //    "debug": false,
+            //    "newestOnTop": false,
+            //    "progressBar": false,
+            //    "positionClass": "toast-top-right",
+            //    "preventDuplicates": false,
+            //    "onclick": null,
+            //    "showDuration": "300",
+            //    "hideDuration": "1000",
+            //    "timeOut": "5000",
+            //    "extendedTimeOut": "1000",
+            //    "showEasing": "swing",
+            //    "hideEasing": "linear",
+            //    "showMethod": "fadeIn",
+            //    "hideMethod": "fadeOut"
+            //};
             var uploader = $scope.uploader = new FileUploader({
-                url: '/file/upload'
+                url: '/file/upload',
+                autoUpload:true
             });
             // a sync filter
             uploader.filters.push({
                 name: 'syncFilter',
-                fn: function(item /*{File|FileLikeObject}*/, options) {
+                fn: function (item /*{File|FileLikeObject}*/, options) {
                     console.log('syncFilter');
                     return this.queue.length < 10;
                 }
             });
+
             // an async filter
             uploader.filters.push({
                 name: 'asyncFilter',
-                fn: function(item /*{File|FileLikeObject}*/, options, deferred) {
+                fn: function (item /*{File|FileLikeObject}*/, options, deferred) {
                     console.log('asyncFilter');
                     setTimeout(deferred.resolve, 1e3);
                 }
             });
+
+            /**
+             * Фильтр проверяет рассширение
+             * Доступны для загрузки только xlsx файлы
+             */
+            uploader.filters.push({
+                name: 'expFilter',
+                fn: function (item) {
+                    if (item.name.slice(-4) !== 'xlsx') {
+                        toastr.error('Расширение файла должно быть xlsx.', 'Ошибка!');
+                        return false;
+                    }
+
+                    return true;
+                }
+            });
+            /**
+             * Фильтр перед загрузкой на сервер.
+             * Проверяет имя файла на соответствие массиву вендоров.
+             * Если имя файла не соответствует ни одному вендору,
+             * то файл не ставится в очередь на загрузку.
+             */
+            uploader.filters.push({
+                name: 'nameFileFilter',
+                fn: function (item) {
+                        if ($scope.rs = arrNameVendorIdeal.indexOf(item.name.slice(0, -5)) < 0) {
+                            toastr.error('Имя файла должно соответствовать названию вендора.', 'Ошибка!');
+                            return false;
+                        }
+                    return true;
+                }
+            });
+
+
             // CALLBACKS
 
-            uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+            uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
                 console.info('onWhenAddingFileFailed', item, filter, options);
             };
-            uploader.onAfterAddingFile = function(fileItem) {
+            uploader.onAfterAddingFile = function (fileItem) {
                 console.info('onAfterAddingFile', fileItem);
             };
-            uploader.onAfterAddingAll = function(addedFileItems) {
+            uploader.onAfterAddingAll = function (addedFileItems) {
                 console.info('onAfterAddingAll', addedFileItems);
             };
-            uploader.onBeforeUploadItem = function(item) {
+            uploader.onBeforeUploadItem = function (item) {
                 console.info('onBeforeUploadItem', item);
             };
-            uploader.onProgressItem = function(fileItem, progress) {
+            uploader.onProgressItem = function (fileItem, progress) {
                 console.info('onProgressItem', fileItem, progress);
             };
-            uploader.onProgressAll = function(progress) {
+            uploader.onProgressAll = function (progress) {
                 console.info('onProgressAll', progress);
             };
-            uploader.onSuccessItem = function(fileItem, response, status, headers) {
+            uploader.onSuccessItem = function (fileItem, response, status, headers) {
                 console.info('onSuccessItem', fileItem, response, status, headers);
             };
-            uploader.onErrorItem = function(fileItem, response, status, headers) {
-                console.info('onErrorItem', fileItem, response, status, headers);
+            uploader.onErrorItem = function (fileItem, response, status, headers) {
+                return response;
+                //console.info('onErrorItem', response);
             };
-            uploader.onCancelItem = function(fileItem, response, status, headers) {
+            uploader.onCancelItem = function (fileItem, response, status, headers) {
                 console.info('onCancelItem', fileItem, response, status, headers);
             };
-            uploader.onCompleteItem = function(fileItem, response, status, headers) {
+            uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 console.info('onCompleteItem', fileItem, response, status, headers);
+                if(status > 200){
+                    toastr.error(response, 'Ошибка! Статус ' + status);
+                    return;
+                }
+                toastr.success(response, 'Ok! Статус ' + status);
+
             };
-            uploader.onCompleteAll = function() {
+            uploader.onCompleteAll = function () {
                 console.info('onCompleteAll');
             };
 
             console.info('uploader', uploader);
-
-
-
-
-
-
-
-
-
-
 
 
             toastr.options = {
@@ -92,10 +173,6 @@ angular.module('DashboardModule')
                 //"showMethod": "fadeIn",
                 //"hideMethod": "fadeOut"
             };
-
-
-
-
 
 
             $scope.$watch('isMIME', function (value) {
@@ -143,7 +220,7 @@ angular.module('DashboardModule')
                     if (files[i].type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
                         $scope.isMIME = 0;
                         $scope.messMimeErr = '';
-                        namesArr.push('Добавлен файл: '+files[i].name + ' (' + $scope.kb(files[i].size) + ')');
+                        namesArr.push('Добавлен файл: ' + files[i].name + ' (' + $scope.kb(files[i].size) + ')');
 
 
                     } else {
@@ -155,7 +232,7 @@ angular.module('DashboardModule')
                 }
 
                 //console.log(ele);
-                var promise = $http.post('/file/upload',ele);
+                var promise = $http.post('/file/upload', ele);
                 //console.log(promise);
                 promise.then(fullfilled, rejected);
 
@@ -244,8 +321,6 @@ angular.module('DashboardModule')
             ////console.log($scope.price);
 
             $scope.addNewPrice = function (newPrice, isValid) {
-
-
 
 
                 var req = {

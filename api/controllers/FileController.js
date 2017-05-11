@@ -6,23 +6,12 @@
  */
 const XlsxPopulate = require('xlsx-populate');
 var fs = require('fs');
-var _ = require('lodash');
+//var _ = require('lodash');
 
 
 
 
 module.exports = {
-    index: function (req, res) {
-
-        res.writeHead(200, {'content-type': 'text/html'});
-        res.end(
-            '<form action="/file/upload" enctype="multipart/form-data" method="post">' +
-            '<input type="text" name="title"><br>' +
-            '<input type="file" name="avatar" multiple="multiple"><br>' +
-            '<input type="submit" value="Upload">' +
-            '</form>'
-        )
-    },
     upload: function (req, res) {
         req.file('file').upload({
                 dirname: require('path').resolve(sails.config.appPath, 'assets/images/price')
@@ -35,8 +24,8 @@ module.exports = {
                 Array.prototype.diff = function(a) {
                     return this.filter(function(i){return a.indexOf(i) < 0;});
                 };
-                sails.log('FILE: ');
-                sails.log(files[0]);
+                //sails.log('FILE: ');
+                //sails.log(files[0]);
 
 
                 // Загрузить существующую книгу
@@ -54,18 +43,7 @@ module.exports = {
                          *  с его помощью будет проверяться соответствие столбцов в загружаемом файле
                          * @type {string[]}
                          */
-                        const arrNameColumnsIdeal = [
-                            'ID',
-                            'VendorID',
-                            'VendorID 2',
-                            'Description',
-                            'Status',
-                            'Currency',
-                            'DealerPrice',
-                            'SpecialPrice',
-                            'OpenPrice',
-                            'Note'
-                        ];
+                        const arrNameColumnsIdeal = sails.config.vendor.arrNameColumnsIdeal;
 
                         /**
                          *  Массив для добавления имён столбцов из загружаемого файла
@@ -75,7 +53,7 @@ module.exports = {
 
 
                         /**
-                         * Проверка названия лист в загружаемом файле
+                         * Проверка названия листа в загружаемом файле
                          * на соответствие шаблону
                          */
                         if (typeof nameList == "undefined" && !nameList) {
@@ -98,36 +76,34 @@ module.exports = {
                          *
                          */
                         var rs = arrNameColumnsIdeal.diff(arrNameColumns);
-                        sails.log('result');
-                        sails.log(rs);
-                        if(rs.length > 0){
-                            sails.log('Ошибка в названии столбца ' + rs + '!');
+                        //console.log(rs.length);
+                        if(rs.length == 1){
                             return res.badRequest('Ошибка в названии столбца ' + rs + '!');
                         }
 
+                        if(rs.length > 1 ){
+                            return res.badRequest('Есть ошибки в названии столбцов ' + rs + '!');
+                        }
 
-                        //sails.log('strNameColumnsIdeal');
-                        //sails.log(strNameColumnsIdeal);
 
 
-                        //if(!strNameColumns === strNameColumnsIdeal){
-                        //    sails.log('Строки не равны');
-                        //}
 
+                        
                         // Получить значение ячейки
                         const value = workbook.sheet("Лист1").cell("A1").value();
 
-                        sails.log('arrNameColumns');
-                        sails.log(arrNameColumns);
-
-                        sails.log('VALUE');
-                        sails.log(value);
-
-                        sails.log('arrNameColumns');
-                        sails.log(arrNameColumns);
+                        //sails.log('arrNameColumns');
+                        //sails.log(arrNameColumns);
+                        //
+                        //sails.log('VALUE');
+                        //sails.log(value);
+                        //
+                        //sails.log('arrNameColumns');
+                        //sails.log(arrNameColumns);
                         //sails.log('nameList');
                         //sails.log(nameList);
-                        res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
+                        res.ok('Всё ОК!');
+                        //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });
 
                 //promise
