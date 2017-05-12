@@ -1,12 +1,86 @@
 angular.module('DashboardModule')
     //.constant('baseUrl', 'http://localhost:1337')
-    .controller('DashboardController', ['$scope', '$http', 'toastr', '$window', '$state', 'FileUploader', '$stateParams', '$resource', '$rootScope',
-        function ($scope, $http, toastr, $window, $state, FileUploader, angularFileUpload, $stateParams, $resource, $rootScope) {
+    .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$stateParams', '$resource', '$rootScope',
+        function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader, angularFileUpload, $stateParams, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
             $scope.nameButton = 'Добавить';
             $scope.isMIME = 1;
             $scope.messMimeErr = '';
             $scope.goReport = false;
+
+            /*********************************/
+
+
+            $scope.read = function (workbook) {
+                /* DO SOMETHING WITH workbook HERE */
+                console.log(workbook);
+            };
+
+            $scope.error = function (e) {
+                /* DO SOMETHING WHEN ERROR IS THROWN */
+                console.log(e);
+            };
+
+
+            /* set up XMLHttpRequest */
+            var url = "/images/price/report/";
+            var oReq = new XMLHttpRequest();
+            oReq.open("GET", url, true);
+            oReq.responseType = "arraybuffer";
+            var arraybuffer = oReq.response;
+
+            /* convert data to binary string */
+            var data = new Uint8Array(arraybuffer);
+            var arr = new Array();
+            for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+            var bstr = arr.join("");
+
+            /* Call XLSX */
+            var workbook = XLSX.read(bstr, {type:"binary"});
+
+
+            oReq.onload = function(e) {
+                var arraybuffer = oReq.response;
+
+                /* convert data to binary string */
+                var data = new Uint8Array(arraybuffer);
+                var arr = new Array();
+                for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+                var bstr = arr.join("");
+
+                /* Call XLSX */
+                var workbook = XLSX.read(bstr, {type:"binary"});
+
+                /* DO SOMETHING WITH workbook HERE */
+            };
+
+            oReq.send();
+
+            //if(typeof require !== 'undefined') XLSX = require('xlsx');
+            /* bookType can be any supported output type */
+            //var workbook = XLSX.readFile('./out.xlsx');
+            //var workbook = XLSX.utils.table_to_book(document.getElementById('tableau'));
+
+            //XLSX.writeFile('/images/price/report/0c0171f9-850b-4cba-a13b-3178af8f5128.xlsx','YES.xlsx');
+
+
+            var wopts = {bookType: 'xlsx', bookSST: false, type: 'binary'};
+
+            var wbout = XLSX.write(workbook, wopts);
+
+            function s2ab(s) {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+
+            /* the saveAs call downloads a file on the local machine */
+            saveAs(new Blob([s2ab(wbout)], {type: "application/octet-stream"}), "report.xlsx");
+
+
+            /*********************************/
+
 
             /**
              * Название вендоров
@@ -34,11 +108,48 @@ angular.module('DashboardModule')
                 'Zyxel'
             ];
 
-            $scope.getReport = function () {
+            $scope.getReport = function (path) {
+
+                $scope.code = null;
+                $scope.response = null;
+
+                //import saveAs from 'save-as';
+                //$http({method: 'GET', url: "/get/report/?fd="+path,
+                //    responseType: "arraybuffer"}).
+                //success(function(data, status, headers, config) {
+                //    // use the saveAs library to save the buffer as a blob on the user's machine. Use the correct MIME type!
+                //    saveAs(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel.xlsx");
+                //}).
+                //error(function(data, status, headers, config) {
+                //    console.log(data);
+                //});
+
                 $http.post('/get/report', {
-                    fileName: $scope.pathToReport
+                    fd: path,
+                    responseType: "arraybuffer",
+                    headers: {'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
+                }).then(function (response) {
+                    $scope.status = response.status;
+                    saveAs(new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel.xlsx");
+                    return $scope.data = response.data;
+                }, function (response) {
+                    saveAs(new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel2.xlsx");
+                    $scope.data = response.data || 'Request failed';
+                    $scope.status = response.status;
                 });
+                //$http.post('/get/report', {
+                //    fd: path,
+                //    headers:{'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
+                //}).then(function(response) {
+                //    $scope.status = response.status;
+                //    saveAs(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "test.xlsx");
+                //  return  $scope.data = response.data;
+                //}, function(response) {
+                //    $scope.data = response.data || 'Request failed';
+                //    $scope.status = response.status;
+                //});
             };
+
 
             //$scope.info = {};
             //$scope.info.description ='';
@@ -148,10 +259,13 @@ angular.module('DashboardModule')
                 console.info('onCompleteItem', fileItem, response, status, headers);
                 if (status > 200) {
                     toastr.error(response.message, 'Ошибка! Статус ' + status);
-                    $scope.pathToReport = response.pathToReport;
+                    $scope.pathToReport = response.avatarFd;
                     $scope.goReport = response.goReport;
                     return;
                 }
+                $scope.pathToReport = response.avatarFd;
+                console.log('RESPONSE');
+                console.log(response.avatarFd);
                 toastr.success(response, 'Ok! Статус ' + status);
 
             };
@@ -159,7 +273,7 @@ angular.module('DashboardModule')
                 console.info('onCompleteAll');
             };
 
-            console.info('uploader', uploader);
+            //console.info('uploader', uploader);
 
 
             toastr.options = {

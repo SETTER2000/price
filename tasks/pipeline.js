@@ -40,6 +40,11 @@ var jsFilesToInject = [
   'js/dependencies/moment-recur.js',
   'js/dependencies/ru.js',
   'js/dependencies/angular-moment.js',
+  'js/dependencies/xlsx.min.js',
+  'js/dependencies/xlsx.core.js',
+  'js/dependencies/xlsx.full.js',
+  'js/dependencies/cpexcel.js',
+  'js/dependencies/shim.js',
   // Dependencies like jQuery, or Angular are brought in here
   'js/dependencies/**/*.js',
 

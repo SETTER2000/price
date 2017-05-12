@@ -68,6 +68,8 @@
             <input type="file" nv-file-select="" uploader="uploader" multiple  />
 
 
+
+
         </div>
 
         <div class="col-md-9" style="margin-bottom: 40px">
@@ -112,15 +114,19 @@
                             <!--&lt;!&ndash;<span class="glyphicon glyphicon-trash"></span> Удалить&ndash;&gt;-->
                         <!--&lt;!&ndash;</button>&ndash;&gt;-->
                     <!--</td>-->
+
                     <td class="text-center">
-                        <!--<a href="/images/price/report/{{pathToReport}}" download >go</a>-->
-                        <button ng-if="goReport" ng-click="getReport()" type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
+                        <!--<a  href="/get/report?fd={{pathToReport}}" download >go</a>-->
+                        <button ng-if="goReport" ng-click="getReport(pathToReport)" type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
                             <span  class="glyphicon glyphicon-list-alt "></span> Отчёт
                         </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
+
+
+
 
             <div>
                 <div>

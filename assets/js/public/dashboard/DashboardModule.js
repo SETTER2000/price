@@ -1,4 +1,4 @@
-angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource',  'angularFileUpload','ngAnimate'])
+angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource', 'angular-js-xlsx', 'angularFileUpload','ngAnimate'])
     //.config(function ($routeProvider, $locationProvider) {
     //    $routeProvider
     //
@@ -14,7 +14,13 @@ angular.module('DashboardModule', ['ui.router', 'toastr', 'ngResource',  'angula
     //    ;
     //    $locationProvider.html5Mode({enabled: true, requireBase: false});
     //})
-
+    .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+        // We must whitelist the JSONP endpoint that we are using to show that we trust it
+        $sceDelegateProvider.resourceUrlWhitelist([
+            'self',
+            'http://localhost:1339/**'
+        ]);
+    }])
     .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
         $stateProvider
             .state('home', {

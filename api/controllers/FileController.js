@@ -7,7 +7,8 @@
 const XlsxPopulate = require('xlsx-populate');
 var fs = require('fs');
 const path = require('path');
-
+XLSX = require('xlsx');
+var workbook = XLSX.readFile('test.xlsx');
 //var _ = require('lodash');
 
 
@@ -97,7 +98,6 @@ module.exports = {
 
                             workbook.toFileAsync(pathToReport);
 
-
                             return res.badRequest({
                                 message: 'Ошибка в названии столбца ' + rs + '!',
                                 pathToReport: nameFileUpload,
@@ -121,7 +121,13 @@ module.exports = {
                         //sails.log('value3');
                         //sails.log(value3);
 
-                        res.ok();
+
+                        //res.ok();
+                        return res.ok({
+                            files: files,
+                            avatarFd:files[0].fd,
+                            textParams: req.params.all()
+                        });
                         //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });
 
@@ -136,21 +142,42 @@ module.exports = {
 
             });
     },
+    download: function (req, res) {
+        sails.log('LOCATION ВЫШЛА!!!!');
+        sails.log(req.param('fd'));
+        sails.log(req.param('cache'));
+        var location = req.param('fd');
 
-    avatar: function (req, res){
+        var file = fs.readFileSync(location, 'binary');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', "attachment; filename=" + "6e1f78ae-6feb-4f21-8088-f33bee1460a0.xlsx");
+        return res.end(file, 'binary');
 
+
+        //res.attachment(location);
         var SkipperDisk = require('skipper-disk');
         var fileAdapter = SkipperDisk(/* optional opts */);
 
-        // set the filename to the same file as the user uploaded
-        res.set("Content-disposition", "attachment; filename='/host/home/price/www/assets/images/price/report/" + req.param('fileName') + "'");
-
-        // Stream the file down
-        fileAdapter.read("/images/price/report/" + req.param('fileName'))
-            .on('error', function (err){
-                return res.serverError(err);
-            })
-            .pipe(res);
+        fileAdapter.read(location).on('error', function (err) {
+            sails.log('ОШИБОЧКА ВЫШЛА!!!!');
+            return res.serverError(err);
+        }).pipe(res);
     }
+    //download: function (req, res){
+    //    sails.log('UPS!!');
+    //   return res.attachment('D:\host\home\price\www\assets\images\price\9a0340e9-d276-4151-90d1-77909f009660.xlsx');
+    //    var SkipperDisk = require('skipper-disk');
+    //    var fileAdapter = SkipperDisk(/* optional opts */);
+    //
+    //    // set the filename to the same file as the user uploaded
+    //    res.set("Content-disposition", "attachment; filename='/host/home/price/www/assets/images/price/report/" + req.param('fileName') + "'");
+    //
+    //    // Stream the file down
+    //    fileAdapter.read( req.param('fileName'))
+    //        .on('error', function (err){
+    //            return res.serverError(err);
+    //        })
+    //        .pipe(res);
+    //}
 };
 
