@@ -69,8 +69,9 @@ module.exports = {
                          * на соответствие шаблону
                          */
                         if (typeof nameList == "undefined" && !nameList) {
-                            sails.log('Нет листа');
-                            return res.forbidden("Лист с именем \"Лист1\" отсутствует в файле. Попробуйте изменить имя листа на \"Лист1\"");
+                            return res.forbidden({
+                                message:"Лист с именем \"Лист1\" отсутствует в файле. Попробуйте изменить имя листа на \"Лист1\""
+                                });
                         }
 
 
@@ -100,7 +101,7 @@ module.exports = {
 
                             return res.badRequest({
                                 message: 'Ошибка в названии столбца ' + rs + '!',
-                                pathToReport: nameFileUpload,
+                                avatarFd: nameFileUpload,
                                 goReport: true
                             });
                         }
@@ -125,8 +126,8 @@ module.exports = {
                         //res.ok();
                         return res.ok({
                             files: files,
-                            avatarFd:files[0].fd,
-                            textParams: req.params.all()
+                            textParams: req.params.all(),
+                            goReport:false
                         });
                         //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });

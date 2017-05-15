@@ -27,8 +27,8 @@
 
 <div class="col-sm-9  col-md-10  col-md-offset-2 col-sm-offset-2">
     <div class="page-header">
-        <h1>Добавить прайс
-            <small></small>
+        <h1>Прайс лист  <small></small>
+        <a target="_blank" href="/images/price/full/price-all.09-05-2017.xlsx" class="btn  btn-success btn-sm ">Скачать</a>
         </h1>
     </div>
     <!--<a href="/upload">Upload</a>-->
@@ -46,7 +46,7 @@
 
         <div class="col-md-3">
 
-            <h3>Выбрать файлы</h3>
+            <h3>Загрузить прайс</h3>
 
             <div ng-show="uploader.isHTML5">
                 <!-- 3. nv-file-over uploader="link" over-class="className" -->
@@ -75,7 +75,7 @@
         <div class="col-md-9" style="margin-bottom: 40px">
 
             <h3>Очередь загрузки</h3>
-            <p>Длина очереди: {{ uploader.queue.length }}</p>
+            <p>Длина очереди: {{uploader.queue.length}}</p>
 
             <table class="table">
                 <thead>
@@ -85,7 +85,7 @@
                     <th ng-show="uploader.isHTML5">Прогресс</th>
                     <th class="text-center">Статус</th>
                     <!--<th>Описание ошибки</th>-->
-                    <th class="text-center">Получить отчёт</th>
+                    <th class="text-center">Отчёт</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,10 +116,10 @@
                     <!--</td>-->
 
                     <td class="text-center">
-                        <!--<a  href="/get/report?fd={{pathToReport}}" download >go</a>-->
-                        <button ng-if="goReport" ng-click="getReport(pathToReport)" type="button" class="btn btn-default btn-xs"  ng-disabled="!uploader.queue.length">
-                            <span  class="glyphicon glyphicon-list-alt "></span> Отчёт
-                        </button>
+                        <a ng-if="goReport" class="btn btn-default"  target="_blank" href="/images/price/report/{{pathToReport}}">
+                            <span  class="glyphicon glyphicon-list-alt "></span>
+                            Скачать
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -127,12 +127,11 @@
 
 
 
-
             <div>
                 <div>
                     Прогресс загрузки очереди:
                     <div class="progress" style="">
-                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        <div class="progress-bar" role="progressbar" ng-style="{'width': uploader.progress + '%' }"></div>
                     </div>
                 </div>
                 <!--<button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">-->
