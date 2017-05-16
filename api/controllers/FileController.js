@@ -56,6 +56,14 @@ module.exports = {
 
 
                         /**
+                         * Матрица все книги. 
+                         * @type {Range|undefined}
+                         */
+                        const matrix = workbook.sheet(0).usedRange();
+               
+
+
+                        /**
                          *  Массив-шаблон названия столбцов,
                          *  с его помощью будет проверяться соответствие столбцов в загружаемом файле
                          * @type {string[]}
@@ -183,28 +191,31 @@ module.exports = {
                         //});
                         //var ys = 1;
                         var err = 0;
-                        function validationRow(number){
-                            const r = workbook.sheet(0).range(`A${number}:L${number}`).forEach(range => {
 
+                        function validationRow(number) {
+                            workbook.sheet(0).range(`A${number}:L${number}`).forEach(range => {
+                                var r = number;
                                 let valueCell = `${range.value()}`;
                                 let pattern = /^\d\d\d\d\d$/gi;
                                 let result = valueCell.match(pattern);
-
-                                //
                                 if (result == undefined) {
                                     err++;
-                                    workbook.sheet(0).row(number).cell(number).style("fill", "ffc8ce");
-                                    //sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
+                                    for (let c = 1; c <= 10; c++) {
+                                        let res = `${workbook.sheet(0).row(r).cell(c).value()}`;
+                                        if (res === valueCell) {
+                                            workbook.sheet(0).row(r).cell(c).style("fill", "ffc8ce");
+                                        }
+                                    }
+                                    // sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
                                 }
                             });
-
                         }
 
-                        for(let i= 2; i<= 100; i++){
+                        for (let i = 2; i <= matrix._numRows; i++) {
                             validationRow(i);
                         }
 
-
+                        // workbook.sheet(0).row(2).cell(5).style("fill", "ffc8ce");
                         /**
                          * Массив
                          * @type {Array}
