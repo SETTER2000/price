@@ -10,46 +10,6 @@ angular.module('DashboardModule')
 
             /*********************************/
 
-            //var url = "/images/price/report/0b9cceff-2bf0-4224-bc51-25048e69a0ab.xlsx";
-            //var oReq = new XMLHttpRequest();
-            //oReq.open("GET", url, true);
-            //oReq.responseType = "arraybuffer";
-            //var arraybuffer = oReq.response;
-            //var data = new Uint8Array(arraybuffer);
-            //console.log('data');
-            //console.log(data);
-            //var arr = new Array();
-            //for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-            //var bstr = arr.join("");
-            //
-            //oReq.onload = function(e) {
-            //    var arraybuffer = oReq.response;
-            //    var data = new Uint8Array(arraybuffer);
-            //    var arr = new Array();
-            //    //if(data.length>0){
-            //    //    alert('URA '+ data.length +' '+ String.fromCharCode(data[0]));
-            //    //}else{
-            //    //    alert('Нет данных !'+data.length);
-            //    //}
-            //    for(var i = 0; i != data.length; ++i){
-            //        arr[i] = String.fromCharCode(data[i]);
-            //    }
-            //    var bstr = arr.join("");
-            //    var workbook = XLSX.read(bstr, {type:"binary"});
-            //    var wopts = {bookType: 'xlsx', bookSST: false, type: 'binary'};
-            //    var wbout = XLSX.write(workbook, wopts);
-            //    saveAs(new Blob([s2ab(wbout)], {type: "application/octet-stream"}), "report.xlsx");
-            //};
-            //
-            //oReq.send();
-            //function s2ab(s) {
-            //    var buf = new ArrayBuffer(s.length);
-            //    var view = new Uint8Array(buf);
-            //    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-            //    return buf;
-            //}
-
-            /*********************************/
             $scope.getReport = function (fileName) {
                 console.log('fileName');
                 console.log(fileName);
@@ -57,8 +17,6 @@ angular.module('DashboardModule')
                 var oReq = new XMLHttpRequest();
                 oReq.open("GET", url, true);
                 oReq.responseType = "arraybuffer";
-
-
 
                 oReq.onload = function(e) {
                     var arraybuffer = oReq.response;
@@ -88,6 +46,7 @@ angular.module('DashboardModule')
                 }
             };
 
+
             /**
              * Название вендоров
              * По этому массиву будет вестись проверка соответствия имён загружаемых файлов
@@ -114,73 +73,12 @@ angular.module('DashboardModule')
                 'Zyxel'
             ];
 
-            //$scope.getReport = function (path) {
-            //
-            //    $scope.code = null;
-            //    $scope.response = null;
-            //
-            //    //import saveAs from 'save-as';
-            //    //$http({method: 'GET', url: "/get/report/?fd="+path,
-            //    //    responseType: "arraybuffer"}).
-            //    //success(function(data, status, headers, config) {
-            //    //    // use the saveAs library to save the buffer as a blob on the user's machine. Use the correct MIME type!
-            //    //    saveAs(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel.xlsx");
-            //    //}).
-            //    //error(function(data, status, headers, config) {
-            //    //    console.log(data);
-            //    //});
-            //
-            //    $http.post('/get/report', {
-            //        fd: path,
-            //        responseType: "arraybuffer",
-            //        headers: {'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
-            //    }).then(function (response) {
-            //        $scope.status = response.status;
-            //        saveAs(new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel.xlsx");
-            //        return $scope.data = response.data;
-            //    }, function (response) {
-            //        saveAs(new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "excel2.xlsx");
-            //        $scope.data = response.data || 'Request failed';
-            //        $scope.status = response.status;
-            //    });
-            //    //$http.post('/get/report', {
-            //    //    fd: path,
-            //    //    headers:{'Content-type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
-            //    //}).then(function(response) {
-            //    //    $scope.status = response.status;
-            //    //    saveAs(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "test.xlsx");
-            //    //  return  $scope.data = response.data;
-            //    //}, function(response) {
-            //    //    $scope.data = response.data || 'Request failed';
-            //    //    $scope.status = response.status;
-            //    //});
-            //};
 
-
-            //$scope.info = {};
-            //$scope.info.description ='';
-            //toastr.options = {
-            //    "closeButton": false,
-            //    "debug": false,
-            //    "newestOnTop": false,
-            //    "progressBar": false,
-            //    "positionClass": "toast-top-right",
-            //    "preventDuplicates": false,
-            //    "onclick": null,
-            //    "showDuration": "300",
-            //    "hideDuration": "1000",
-            //    "timeOut": "5000",
-            //    "extendedTimeOut": "1000",
-            //    "showEasing": "swing",
-            //    "hideEasing": "linear",
-            //    "showMethod": "fadeIn",
-            //    "hideMethod": "fadeOut"
-            //};
             var uploader = $scope.uploader = new FileUploader({
                 url: '/file/upload',
                 autoUpload: true
             });
-            // a sync filter
+
             uploader.filters.push({
                 name: 'syncFilter',
                 fn: function (item /*{File|FileLikeObject}*/, options) {
@@ -189,7 +87,7 @@ angular.module('DashboardModule')
                 }
             });
 
-            // an async filter
+
             uploader.filters.push({
                 name: 'asyncFilter',
                 fn: function (item /*{File|FileLikeObject}*/, options, deferred) {
@@ -197,6 +95,7 @@ angular.module('DashboardModule')
                     setTimeout(deferred.resolve, 1e3);
                 }
             });
+
 
             /**
              * Фильтр проверяет рассширение
@@ -213,6 +112,8 @@ angular.module('DashboardModule')
                     return true;
                 }
             });
+
+
             /**
              * Фильтр перед загрузкой на сервер.
              * Проверяет имя файла на соответствие массиву вендоров.
@@ -229,21 +130,6 @@ angular.module('DashboardModule')
                     return true;
                 }
             });
-
-
-            //uploader.filters.push({
-            //    name: 'getReportFilter',
-            //    fn: function (item) {
-            //        if ($scope.rs = arrNameVendorIdeal.indexOf(item.name.slice(0, -5)) < 0) {
-            //            toastr.error('Имя файла должно соответствовать названию вендора.', 'Ошибка!');
-            //            return false;
-            //        }
-            //        return true;
-            //    }
-            //});
-
-
-
 
             // CALLBACKS
 
@@ -270,7 +156,6 @@ angular.module('DashboardModule')
             };
             uploader.onErrorItem = function (fileItem, response, status, headers) {
                 return response;
-                //console.info('onErrorItem', response);
             };
             uploader.onCancelItem = function (fileItem, response, status, headers) {
                 console.info('onCancelItem', fileItem, response, status, headers);
@@ -279,11 +164,6 @@ angular.module('DashboardModule')
                 console.info('onCompleteItem', fileItem, response, status, headers);
                 if (status > 200) {
                     toastr.error(response.message, 'Ошибка! Статус ' + status);
-
-                    console.log('response.avatarFd');
-                    console.log(response.avatarFd);
-                    
-                    
                     $scope.pathToReport = response.avatarFd;
                     $scope.goReport = response.goReport;
                     return;
@@ -293,14 +173,10 @@ angular.module('DashboardModule')
                 console.log(response.avatarFd);
                 $scope.goReport = response.goReport;
                 toastr.success(response.message, 'Ok! Статус ' + status);
-
             };
             uploader.onCompleteAll = function () {
                 console.info('onCompleteAll');
             };
-
-            //console.info('uploader', uploader);
-
 
             toastr.options = {
                 "closeButton": true
@@ -325,29 +201,6 @@ angular.module('DashboardModule')
                 $scope.isMIME = value;
             });
 
-            //$scope.updateSize = function updateSize() {
-            //    $scope.nameButton = 'xvbcbc';
-            //    var file = document.getElementById("inputPrice").files[0],
-            //        ext = "не определилось",
-            //        parts = file.name.split('.');
-            //    if (parts.length > 1) ext = parts.pop();
-            //
-            //    if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
-            //        $scope.isMIME = 0;
-            //    } else {
-            //        var messMimeErr = 'Ошибка: Расширение не поддерживается.';
-            //    }
-            //
-            //    document.getElementById("e-fileinfo").innerHTML = [
-            //        "Размер файла: " + file.size + " B",
-            //        "Расширение: " + ext,
-            //        //"MIME тип: " + file.type,
-            //        messMimeErr
-            //
-            //    ].join("<br>");
-            //};
-
-            //document.getElementById('inputPrice').addEventListener('change', $scope.updateSize);
             $scope.kb = function (ch) {
                 var size = (ch / 1024).toFixed(2);
                 if (size > 1023) {
@@ -389,83 +242,6 @@ angular.module('DashboardModule')
                 //console.log($scope.namesString);
             };
 
-            //toastr.error(err.data.details, 'Ошибка - 889! ' + err.data.message);
-            //$scope.isMI = function () {
-            //
-            //    $scope.isMIME = true;
-            //};
-
-
-            //$scope.updateSize = function () {
-            //    var file = document.getElementById("uploadInput").files[0],
-            //        ext = "не определилось",
-            //        parts = file.name.split('.');
-            //    if (parts.length > 1) ext = parts.pop();
-            //    document.getElementById("e-fileinfo").innerHTML = [
-            //        "Размер файла: " + file.size + " B",
-            //        "Расширение: " + ext,
-            //        "MIME тип: " + file.type
-            //    ].join("<br>");
-            //};
-            //var uploader = $scope.uploader = new FileUploader({
-            //    url: '/upload'
-            //});
-            //
-            //uploader.filters.push({
-            //    name: 'customFilter',
-            //    fn: function(item /*{File|FileLikeObject}*/, options) {
-            //        return this.queue.length < 10;
-            //    }
-            //});
-            //
-            //uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
-            //    console.info('onWhenAddingFileFailed', item, filter, options);
-            //};
-            //uploader.onAfterAddingFile = function(fileItem) {
-            //    console.info('onAfterAddingFile', fileItem);
-            //};
-            //uploader.onAfterAddingAll = function(addedFileItems) {
-            //    console.info('onAfterAddingAll', addedFileItems);
-            //};
-            //uploader.onBeforeUploadItem = function(item) {
-            //    console.info('onBeforeUploadItem', item);
-            //};
-            //uploader.onProgressItem = function(fileItem, progress) {
-            //    console.info('onProgressItem', fileItem, progress);
-            //};
-            //uploader.onProgressAll = function(progress) {
-            //    console.info('onProgressAll', progress);
-            //};
-            //uploader.onSuccessItem = function(fileItem, response, status, headers) {
-            //    console.info('onSuccessItem', fileItem, response, status, headers);
-            //};
-            //uploader.onErrorItem = function(fileItem, response, status, headers) {
-            //
-            //    toastr.error(response, 'Ошибка! DashboardController 33');
-            //    console.info('onErrorItem', fileItem, response, status, headers);
-            //};
-            //uploader.onCancelItem = function(fileItem, response, status, headers) {
-            //    console.info('onCancelItem', fileItem, response, status, headers);
-            //};
-            //uploader.onCompleteItem = function(fileItem, response, status, headers) {
-            //    console.info('onCompleteItem', fileItem, response, status, headers);
-            //};
-            //uploader.onCompleteAll = function() {
-            //    console.info('onCompleteAll');
-            //};
-            //
-            //console.info('uploader', uploader);
-            //
-            //
-            //$scope.uploadPrice = function () {
-            //    var promise = $http.post('/file/upload', $scope.price);
-            //    //console.log(promise);
-            //    promise.then(fullfilled, rejected);
-            //    return false
-            //};
-            ////console.log('PRICE: ');
-            ////console.log($scope.price);
-
             $scope.addNewPrice = function (newPrice, isValid) {
 
 
@@ -496,24 +272,7 @@ angular.module('DashboardModule')
 
                 return false
             };
-            //$scope.sendRequest = function () {
-            //    var promise = $http.post('/user');
-            //    //console.log(promise);
-            //    promise.then(fullfilled, rejected);
-            //    return false
-            //};
-            //
-            //$scope.refresh = function () {
-            //    $scope.item = Users.get({id: $routeParams.id}, function (users) {
-            //        $scope.users = users;
-            //        // кол-во пользователей
-            //        // console.log($scope.users.length);
-            //        // console.log($scope.users);
-            //    }, function (err) {
-            //        if (err) console.log(err.message);
-            //    });
-            //};
-            //
+
             function fullfilled(response) {
                 console.log('Status: ' + response.status);
                 console.log('Type: ' + response.headers('content-type'));
@@ -527,12 +286,5 @@ angular.module('DashboardModule')
             function rejected(err) {
                 console.log(err.data);
                 toastr.error(err.data, 'Ошибка! DashboardController');
-                //console.log('status' );
-                //console.log(err.status);
-                //console.log('err: ' );
-                //console.log(err);
             }
-
-            //
-            //$scope.refresh();
         }]);

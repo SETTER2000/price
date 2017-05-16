@@ -40,7 +40,11 @@ module.exports = {
                 XlsxPopulate.fromFileAsync(files[0].fd)
                     .then((workbook, reject) => {
 
-
+                        /**
+                         * Количество колонок в прайсе, которое должно быть по умолчанию
+                         * @type {Number}
+                         */
+                        const countColumnsIdeal = sails.config.vendor.arrNameColumnsIdeal.length;
 
 
                         /**
@@ -48,7 +52,8 @@ module.exports = {
                          * Это название должно так же быть и в загружаемом файле.
                          * @type {Sheet|Sheet|undefined}
                          */
-                        const nameList = workbook.sheet("Лист1");
+                        const nameList = workbook.sheet(0);
+
 
                         /**
                          *  Массив-шаблон названия столбцов,
@@ -56,6 +61,7 @@ module.exports = {
                          * @type {string[]}
                          */
                         const arrNameColumnsIdeal = sails.config.vendor.arrNameColumnsIdeal;
+
 
                         /**
                          *  Массив для добавления имён столбцов из загружаемого файла
@@ -68,18 +74,75 @@ module.exports = {
                          * Проверка названия листа в загружаемом файле
                          * на соответствие шаблону
                          */
-                        if (typeof nameList == "undefined" && !nameList) {
-                            return res.forbidden({
-                                message:"Лист с именем \"Лист1\" отсутствует в файле. Попробуйте изменить имя листа на \"Лист1\""
-                                });
-                        }
+                        //if (typeof nameList == "undefined" && !nameList) {
+                        //    return res.forbidden({
+                        //        message:"Лист с именем \"Лист1\" отсутствует в файле. Попробуйте изменить имя листа на \"Лист1\""
+                        //        });
+                        //}
 
 
                         /**
                          *  Получить названия колонок в загружаемом файле
                          */
-                        for (var i = 1; i < 11; i++) {
-                            arrNameColumns.push(workbook.sheet("Лист1").row(1).cell(i).value());
+                        for (var i = 1; i <= 10; i++) {
+                            //var str = workbook.sheet(0).row(1).cell(i).value();
+                            //if( str.localeCompare(arrNameColumnsIdeal[i]) !=0 ){
+                            //    return res.forbidden({
+                            //        message: 'Кол-во колонок не совпадает с шаблоном по умолчанию! ' +
+                            //        'Должно быть '+arrNameColumnsIdeal+' колонок. '
+                            //    });
+                            //}
+
+                            var nameColumn = workbook.sheet(0).row(1).cell(i).value();
+
+                            if (typeof nameColumn == 'undefined' && arrNameColumns.length < countColumnsIdeal) {
+                                return res.forbidden({
+                                    message: 'Кол-во колонок не совпадает с шаблоном по умолчанию! ' +
+                                    'Должно быть ' + countColumnsIdeal + ' колонок. '
+                                });
+                            }
+                            //sails.log('countColumnsIdeal');
+                            //sails.log(countColumnsIdeal);
+                            //
+                            //sails.log('arrNameColumns');
+                            //sails.log(arrNameColumns);
+                            //
+                            //sails.log('arrNameColumns.length');
+                            //sails.log(arrNameColumns.length);
+
+                            //sails.log('nameColumn');
+                            //sails.log(nameColumn);
+                            //
+                            //sails.log('arrNameColumnsIdeal[i]');
+                            //sails.log(arrNameColumnsIdeal[i - 1]);
+
+                            if (arrNameColumnsIdeal[i - 1] !== nameColumn) {
+                                return res.forbidden({
+                                    message: 'Не верное имя колонки ' +
+                                    nameColumn + '! Колонка должна называться ' + arrNameColumnsIdeal[i - 1]
+                                });
+                            }
+
+                            arrNameColumns.push(workbook.sheet(0).row(1).cell(i).value());
+                        }
+
+                        //sails.log('countColumnsIdeal');
+                        //sails.log(countColumnsIdeal);
+                        //
+                        //sails.log('arrNameColumns');
+                        //sails.log(arrNameColumns);
+                        //
+                        //sails.log('arrNameColumns.length');
+                        //sails.log(arrNameColumns.length);
+
+
+                        /**
+                         * Сверяет кол-во колонок с шаблоном по умолчанию
+                         */
+                        if (countColumnsIdeal != arrNameColumns.length) {
+                            return res.forbidden({
+                                message: 'Кол-во колонок не совпадает с шаблоном по умолчанию!'
+                            });
                         }
 
 
@@ -89,16 +152,10 @@ module.exports = {
                          *
                          */
                         var rs = arrNameColumnsIdeal.diff(arrNameColumns);
-
                         if (rs.length == 1) {
-                            const cll = workbook.sheet("Лист1").row(1).find(rs[0]);
-                            //console.log(cll);
-                            //console.log(cll[0]._columnNumber);
-
-                            workbook.sheet("Лист1").row(1).cell(cll[0]._columnNumber).style({bold: true, fontColor: 'f90b0b'});
-
+                            const cll = workbook.sheet(0).row(1).find(rs[0]);
+                            workbook.sheet(0).row(1).cell(cll[0]._columnNumber).style({bold: true, fontColor: 'f90b0b'});
                             workbook.toFileAsync(pathToReport);
-
                             return res.badRequest({
                                 message: 'Ошибка в названии столбца ' + rs + '!',
                                 avatarFd: nameFileUpload,
@@ -107,28 +164,80 @@ module.exports = {
                         }
 
                         if (rs.length > 1) {
-
-
                             return res.badRequest('Есть ошибки в названии столбцов ' + rs + '!');
                         }
 
 
-                        // Получить значение ячейки
-                        const value = workbook.sheet("Лист1").cell("A1").value();
+                        //workbook.sheet(0).range("A2:L2").forEach(range => {
+                        //
+                        //    let valueCell = `${range.value()}`;
+                        //    let pattern = /^\d\d\d\d\d$/gi;
+                        //    let result = valueCell.match(pattern);
+                        //
+                        //    //
+                        //    if (result == undefined) {
+                        //        err++;
+                        //        workbook.sheet(0).row(2).cell(++ys).style("fill", "ffc8ce");
+                        //        sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
+                        //    }
+                        //});
+                        //var ys = 1;
+                        var err = 0;
+                        function validationRow(number){
+                            const r = workbook.sheet(0).range(`A${number}:L${number}`).forEach(range => {
+
+                                let valueCell = `${range.value()}`;
+                                let pattern = /^\d\d\d\d\d$/gi;
+                                let result = valueCell.match(pattern);
+
+                                //
+                                if (result == undefined) {
+                                    err++;
+                                    workbook.sheet(0).row(number).cell(number).style("fill", "ffc8ce");
+                                    //sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
+                                }
+                            });
+
+                        }
+
+                        for(let i= 2; i<= 100; i++){
+                            validationRow(i);
+                        }
+
+
+                        /**
+                         * Массив
+                         * @type {Array}
+                         */
+                        if (err) {
+                            workbook.toFileAsync(pathToReport);
+                            return res.badRequest({
+                                message: 'Файл не принят есть ошибки. Скачайте отчёт, ' +
+                                'исправьте помеченые красным ячейки и загрузите снова.',
+                                avatarFd: nameFileUpload,
+                                goReport: true
+                            });
+                        }
 
 
                         // Отобразить значения колонки G
-                        const value3 = workbook.sheet("Лист1").column("G").width(25).hidden(false);
+                        const value3 = workbook.sheet(0).column("G").width(25).hidden(false);
                         //sails.log('value3');
                         //sails.log(value3);
 
-
-                        //res.ok();
+                        //setTimeout(function(){
+                        //    return res.ok({
+                        //        files: files,
+                        //        textParams: req.params.all(),
+                        //        goReport: false
+                        //    });
+                        //}, 5000);
                         return res.ok({
                             files: files,
                             textParams: req.params.all(),
-                            goReport:false
+                            goReport: false
                         });
+
                         //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });
 
