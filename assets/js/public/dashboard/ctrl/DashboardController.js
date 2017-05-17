@@ -53,24 +53,34 @@ angular.module('DashboardModule')
              * @type {string[]}
              */
             var arrNameVendorIdeal = [
+                'Аквариус',
                 'Allied Telesis',
-                'Aquarius',
                 'Avaya',
+                'Avocent',
+                'Cadex',
                 'ClearOne',
+                'Dallmeier',
                 'Delta Electronics',
                 'Eaton',
-                'Fluke Ind',
-                'Fluke Net',
+                'Fluke',
                 'Fujitsu',
                 'Huawei',
-                'Huawei-ВКС',
                 'IBM',
                 'Juniper',
+                'Keysight',
+                'Lenovo',
+                'Lifesize',
+                'Mind',
+                'Mojo Networks',
                 'MyToner',
                 'OKI',
-                'RIT',
+                'RiT',
+                'Toshiba GCS',
+                'UNV',
+                'Verint Systems',
                 'Vertiv',
-                'Zyxel'
+                'Yealink',
+                'ZyXEL'
             ];
 
 
@@ -164,7 +174,7 @@ angular.module('DashboardModule')
                 console.info('onCompleteItem', fileItem, response, status, headers);
                 if (status > 200) {
                     toastr.error(response.message, 'Ошибка! Статус ' + status);
-                    $scope.pathToReport = response.avatarFd;
+                    $scope.pathToReport = 'http://localhost:1339/images/price/report/'+response.avatarFd;
                     $scope.goReport = response.goReport;
                     return;
                 }

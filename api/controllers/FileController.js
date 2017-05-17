@@ -39,6 +39,14 @@ module.exports = {
                 // Загрузить существующую книгу
                 XlsxPopulate.fromFileAsync(files[0].fd)
                     .then((workbook, reject) => {
+                        var err = 0;
+
+                        /**
+                         * Цвет ячеек с ошибками
+                         * @type {string}
+                         */
+                        const colorErrorCell = "ffc8ce";
+
 
                         /**
                          * Количество колонок в прайсе, которое должно быть по умолчанию
@@ -56,13 +64,16 @@ module.exports = {
 
 
                         /**
-                         * Матрица все книги. 
+                         * Матрица все книги.
                          * @type {Range|undefined}
                          */
                         const matrix = workbook.sheet(0).usedRange();
-               
 
 
+                        sails.log(matrix);
+                        
+                        
+                        
                         /**
                          *  Массив-шаблон названия столбцов,
                          *  с его помощью будет проверяться соответствие столбцов в загружаемом файле
@@ -92,15 +103,7 @@ module.exports = {
                         /**
                          *  Получить названия колонок в загружаемом файле
                          */
-                        for (var i = 1; i <= 10; i++) {
-                            //var str = workbook.sheet(0).row(1).cell(i).value();
-                            //if( str.localeCompare(arrNameColumnsIdeal[i]) !=0 ){
-                            //    return res.forbidden({
-                            //        message: 'Кол-во колонок не совпадает с шаблоном по умолчанию! ' +
-                            //        'Должно быть '+arrNameColumnsIdeal+' колонок. '
-                            //    });
-                            //}
-
+                        for (var i = 1; i <= arrNameColumnsIdeal; i++) {
                             var nameColumn = workbook.sheet(0).row(1).cell(i).value();
 
                             if (typeof nameColumn == 'undefined' && arrNameColumns.length < countColumnsIdeal) {
@@ -109,21 +112,6 @@ module.exports = {
                                     'Должно быть ' + countColumnsIdeal + ' колонок. '
                                 });
                             }
-                            //sails.log('countColumnsIdeal');
-                            //sails.log(countColumnsIdeal);
-                            //
-                            //sails.log('arrNameColumns');
-                            //sails.log(arrNameColumns);
-                            //
-                            //sails.log('arrNameColumns.length');
-                            //sails.log(arrNameColumns.length);
-
-                            //sails.log('nameColumn');
-                            //sails.log(nameColumn);
-                            //
-                            //sails.log('arrNameColumnsIdeal[i]');
-                            //sails.log(arrNameColumnsIdeal[i - 1]);
-
                             if (arrNameColumnsIdeal[i - 1] !== nameColumn) {
                                 return res.forbidden({
                                     message: 'Не верное имя колонки ' +
@@ -134,15 +122,221 @@ module.exports = {
                             arrNameColumns.push(workbook.sheet(0).row(1).cell(i).value());
                         }
 
-                        //sails.log('countColumnsIdeal');
-                        //sails.log(countColumnsIdeal);
-                        //
-                        //sails.log('arrNameColumns');
-                        //sails.log(arrNameColumns);
-                        //
-                        //sails.log('arrNameColumns.length');
-                        //sails.log(arrNameColumns.length);
+                        
+                        /**
+                         * Именуем диапазоны входящего прайса для удобного разбора
+                         * Объект для диапазонов
+                         */
+                        function Ranges(name, range) {
+                            this.name = name;
+                            this.range = range;
+                            this.nameTwoColumn = 'C';
+                            this.pattern = /^\d+$/gi;
+                        }
 
+                        Ranges.prototype.getRange = function () {
+                            return this.range;
+                        };
+
+                        Ranges.prototype.getName = function () {
+                            return this.name;
+                        };
+
+
+                        /**
+                         * Валидация колонки по паттерну
+                         * @param pattern
+                         * @returns {number}
+                         */
+                        Ranges.prototype.validationColumn = function (pattern) {
+
+                            // Заменяем паттер, который был по умолчанию в классе
+                            if (pattern) this.pattern = pattern;
+
+                            // Проходим по всем ячейкам диапазона текужего объекта
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = `${range.value()}`;
+
+                                // Проверяем, если данные не прошли валидацию,
+                                // то красим ячейку красным цветом
+                                if (valueCell.match(this.pattern) == undefined) {
+                                    err++;
+                                    //*********** !!! НЕ УДАЛЯТЬ! ***********************//
+                                    //sails.log('rowNumber');
+                                    //sails.log(range.rowNumber());
+                                    //sails.log('row');
+                                    //sails.log(range.row().cell(4).value());
+                                    //sails.log('columnName');
+                                    //sails.log(range.columnName() + '' + range.rowNumber());
+                                    //sails.log('sheet');
+                                    //sails.log(range.sheet().value());
+                                    workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                }
+                            });
+                            if (err) return err;
+                        };
+
+
+                        /**
+                         * Валидация двух смежных ячеек на заполнение.
+                         * Впринципе можно использовать и для не смежных ячеек в одной строке.
+                         * @param nameTwoColumn
+                         * @returns {number}
+                         */
+                        Ranges.prototype.validationUndefinedTwoColumn = function (nameTwoColumn) {
+
+                            // Заменяем паттерн, который был по умолчанию в классе
+                            if (nameTwoColumn) this.nameTwoColumn = nameTwoColumn;
+
+                            // Проходим по всем ячейкам диапазона текужего объекта
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Координаты второй колонки
+                                let twoCell = this.nameTwoColumn+''+range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = workbook.sheet(0).cell(currentCell).value();
+
+                                // Проверяем, если данные не прошли валидацию,
+                                // то красим ячейку красным цветом
+                                if (valueCell == undefined) {
+                                    if (range.row().cell(this.nameTwoColumn).value() == undefined) {
+                                        err++;
+                                        //*********** !!! НЕ УДАЛЯТЬ! ***********************//
+                                        //sails.log('rowNumber');
+                                        //sails.log(range.rowNumber());
+                                        //sails.log('row');
+                                        //sails.log(range.row().cell(4).value());
+                                        //sails.log('columnName');
+                                        //sails.log(range.columnName() + '' + range.rowNumber());
+                                        //sails.log('sheet');
+                                        //sails.log(range.sheet().value());
+                                        workbook.sheet(0).cell(twoCell).style("fill", colorErrorCell);
+                                        workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                    }
+                                }
+                            });
+                            if (err) return err;
+                        };
+
+
+                        /**
+                         * Валидация колонки на пустоту, т.е. ячейка не может быть пустой
+                         * @returns {number}
+                         */
+                        Ranges.prototype.validationUndefinedColumn = function () {
+
+                            // Проходим по всем ячейкам диапазона текужего объекта
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = workbook.sheet(0).cell(currentCell).value();
+
+                                // Проверяем, если данные не прошли валидацию,
+                                // то красим ячейку красным цветом
+                                if (valueCell == undefined) {
+                                    workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                }
+                            });
+                            if (err) return err;
+                        };
+
+
+                        //validationRows
+
+                        /**
+                         * Инициализация объектов диапазона
+                         * @type {Ranges}
+                         */
+
+                        const all = new Ranges('ALL', `A1:J${matrix._numRows}`);
+                        const header = new Ranges('HEADER', 'A1:J1');
+                        const identifier = new Ranges('ID', `A2:A${matrix._numRows}`);
+                        const vendorid = new Ranges('VENDORID', `B2:B${matrix._numRows}`);
+                        const vendorid2 = new Ranges('VENDORID2', `C2:C${matrix._numRows}`);
+                        const description = new Ranges('DESCRIPTION', `D2:D${matrix._numRows}`);
+                        const status = new Ranges('STATUS', `E2:E${matrix._numRows}`);
+                        const currency = new Ranges('CURRENCY', `F2:F${matrix._numRows}`);
+                        const dealerprice = new Ranges('DEALERPRICE', `G2:G${matrix._numRows}`);
+                        const specialprice = new Ranges('SPECIALPRICE', `H2:H${matrix._numRows}`);
+                        const openprice = new Ranges('OPENPRICE', `I2:I${matrix._numRows}`);
+                        const note = new Ranges('NOTE', `J2:J${matrix._numRows}`);
+
+                        /**
+                         * Инициализация имён диапазонов в загружаемом прайсе
+                         */
+
+                        // ALL
+                        workbook.definedName(all.getName(), workbook.sheet(0).range(all.getRange()));
+
+                        // HEADER
+                        workbook.definedName(header.getName(), workbook.sheet(0).range(header.getRange()));
+                        //sails.log(workbook.definedName(header.getName()).value());
+
+                        // ID
+                        workbook.definedName(identifier.getName(), workbook.sheet(0).range(identifier.getRange()));
+                        // sails.log(workbook.definedName(identifier.getName()).value());
+
+                        // VENDORID
+                        workbook.definedName(vendorid.getName(), workbook.sheet(0).range(vendorid.getRange()));
+                        //sails.log(workbook.definedName(vendorid.getName()).value());
+
+                        // VENDORID2
+                        workbook.definedName(vendorid2.getName(), workbook.sheet(0).range(vendorid2.getRange()));
+                        //sails.log(workbook.definedName(vendorid2.getName()).value());
+
+                        // DESCRIPTION
+                        workbook.definedName(description.getName(), workbook.sheet(0).range(description.getRange()));
+                        //sails.log(workbook.definedName(description.getName()).value());
+
+                        // STATUS
+                        workbook.definedName(status.getName(), workbook.sheet(0).range(status.getRange()));
+                        //sails.log(workbook.definedName(status.getName()).value());
+
+                        // CURRENCY
+                        workbook.definedName(currency.getName(), workbook.sheet(0).range(currency.getRange()));
+                        //sails.log(workbook.definedName(currency.getName()).value());
+
+                        // DEALERPRICE
+                        workbook.definedName(dealerprice.getName(), workbook.sheet(0).range(dealerprice.getRange()));
+                        //sails.log(workbook.definedName(dealerprice.getName()).value());
+
+                        // SPECIALPRICE
+                        workbook.definedName(specialprice.getName(), workbook.sheet(0).range(specialprice.getRange()));
+                        //sails.log(workbook.definedName(specialprice.getName()).value());
+
+                        // OPENPRICE
+                        workbook.definedName(openprice.getName(), workbook.sheet(0).range(openprice.getRange()));
+                        //sails.log(workbook.definedName(openprice.getName()).value());
+
+                        // NOTE
+                        workbook.definedName(note.getName(), workbook.sheet(0).range(note.getRange()));
+                        //sails.log(workbook.definedName(note.getName()).value());
+
+                        /**
+                         * VALIDATION
+                         */
+                        //err = all.validationRows(/^\d\d\d\d\d$/gi);
+                        err = identifier.validationColumn(/^\d\d\d\d\d$/gi);
+                        err = vendorid.validationUndefinedTwoColumn('C');
+                        err = description.validationUndefinedColumn();
+                        //err = status.validationColumn(/RUR|USD|EUR/g);
+                        err = currency.validationColumn(/RUB|USD|EUR|undefined/g);
+                        err = dealerprice.validationColumn(/^[1-9]+/g);
+                        err = specialprice.validationColumn(/^[1-9]|undefined+/g);
+                        err = openprice.validationColumn(/^[1-9]|undefined+/g);
+                        //err = note.validationColumn(/RUR|USD|EUR/g);
 
                         /**
                          * Сверяет кол-во колонок с шаблоном по умолчанию
@@ -176,46 +370,6 @@ module.exports = {
                         }
 
 
-                        //workbook.sheet(0).range("A2:L2").forEach(range => {
-                        //
-                        //    let valueCell = `${range.value()}`;
-                        //    let pattern = /^\d\d\d\d\d$/gi;
-                        //    let result = valueCell.match(pattern);
-                        //
-                        //    //
-                        //    if (result == undefined) {
-                        //        err++;
-                        //        workbook.sheet(0).row(2).cell(++ys).style("fill", "ffc8ce");
-                        //        sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
-                        //    }
-                        //});
-                        //var ys = 1;
-                        var err = 0;
-
-                        function validationRow(number) {
-                            workbook.sheet(0).range(`A${number}:L${number}`).forEach(range => {
-                                var r = number;
-                                let valueCell = `${range.value()}`;
-                                let pattern = /^\d\d\d\d\d$/gi;
-                                let result = valueCell.match(pattern);
-                                if (result == undefined) {
-                                    err++;
-                                    for (let c = 1; c <= 10; c++) {
-                                        let res = `${workbook.sheet(0).row(r).cell(c).value()}`;
-                                        if (res === valueCell) {
-                                            workbook.sheet(0).row(r).cell(c).style("fill", "ffc8ce");
-                                        }
-                                    }
-                                    // sails.log(valueCell + ' ' + 'Не ID' + ' result: ' + result + ' typeof: ' + typeof valueCell);
-                                }
-                            });
-                        }
-
-                        for (let i = 2; i <= matrix._numRows; i++) {
-                            validationRow(i);
-                        }
-
-                        // workbook.sheet(0).row(2).cell(5).style("fill", "ffc8ce");
                         /**
                          * Массив
                          * @type {Array}
@@ -233,8 +387,6 @@ module.exports = {
 
                         // Отобразить значения колонки G
                         const value3 = workbook.sheet(0).column("G").width(25).hidden(false);
-                        //sails.log('value3');
-                        //sails.log(value3);
 
                         //setTimeout(function(){
                         //    return res.ok({
@@ -248,57 +400,20 @@ module.exports = {
                             textParams: req.params.all(),
                             goReport: false
                         });
-
-                        //res.view('page/showhomepage', {layout: 'dashboard', me: {id: 1, file: files[0], message: 'Всё ОК!'}});
                     });
-
-                //promise
-                //    .then(
-                //        result => alert("Fulfilled: " + result),
-                //        error => alert("Rejected: " + error.message) // Rejected: время вышло!
-                //    );
-                //res.view('page/showhomepage', {layout: 'dashboard', me: {id:1, file:files[0], message:'Всё ОК!'}});
-                //return res.redirect('back');
-
-
             });
     },
     download: function (req, res) {
-        sails.log('LOCATION ВЫШЛА!!!!');
-        sails.log(req.param('fd'));
-        sails.log(req.param('cache'));
         var location = req.param('fd');
-
         var file = fs.readFileSync(location, 'binary');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', "attachment; filename=" + "6e1f78ae-6feb-4f21-8088-f33bee1460a0.xlsx");
         return res.end(file, 'binary');
-
-
-        //res.attachment(location);
         var SkipperDisk = require('skipper-disk');
         var fileAdapter = SkipperDisk(/* optional opts */);
-
         fileAdapter.read(location).on('error', function (err) {
-            sails.log('ОШИБОЧКА ВЫШЛА!!!!');
             return res.serverError(err);
         }).pipe(res);
     }
-    //download: function (req, res){
-    //    sails.log('UPS!!');
-    //   return res.attachment('D:\host\home\price\www\assets\images\price\9a0340e9-d276-4151-90d1-77909f009660.xlsx');
-    //    var SkipperDisk = require('skipper-disk');
-    //    var fileAdapter = SkipperDisk(/* optional opts */);
-    //
-    //    // set the filename to the same file as the user uploaded
-    //    res.set("Content-disposition", "attachment; filename='/host/home/price/www/assets/images/price/report/" + req.param('fileName') + "'");
-    //
-    //    // Stream the file down
-    //    fileAdapter.read( req.param('fileName'))
-    //        .on('error', function (err){
-    //            return res.serverError(err);
-    //        })
-    //        .pipe(res);
-    //}
 };
 
