@@ -40,7 +40,8 @@ module.exports = {
                 XlsxPopulate.fromFileAsync(files[0].fd)
                     .then((workbook, reject) => {
                         var err = 0;
-
+                      
+                        
                         /**
                          * Цвет ячеек с ошибками
                          * @type {string}
@@ -70,10 +71,9 @@ module.exports = {
                         const matrix = workbook.sheet(0).usedRange();
 
 
-                        sails.log(matrix);
-                        
-                        
-                        
+                        // sails.log(matrix);
+
+
                         /**
                          *  Массив-шаблон названия столбцов,
                          *  с его помощью будет проверяться соответствие столбцов в загружаемом файле
@@ -103,7 +103,7 @@ module.exports = {
                         /**
                          *  Получить названия колонок в загружаемом файле
                          */
-                        for (var i = 1; i <= arrNameColumnsIdeal; i++) {
+                        for (var i = 1; i <= countColumnsIdeal; i++) {
                             var nameColumn = workbook.sheet(0).row(1).cell(i).value();
 
                             if (typeof nameColumn == 'undefined' && arrNameColumns.length < countColumnsIdeal) {
@@ -122,7 +122,7 @@ module.exports = {
                             arrNameColumns.push(workbook.sheet(0).row(1).cell(i).value());
                         }
 
-                        
+
                         /**
                          * Именуем диапазоны входящего прайса для удобного разбора
                          * Объект для диапазонов
@@ -133,6 +133,7 @@ module.exports = {
                             this.nameTwoColumn = 'C';
                             this.pattern = /^\d+$/gi;
                         }
+
 
                         Ranges.prototype.getRange = function () {
                             return this.range;
@@ -165,7 +166,7 @@ module.exports = {
                                 // Проверяем, если данные не прошли валидацию,
                                 // то красим ячейку красным цветом
                                 if (valueCell.match(this.pattern) == undefined) {
-                                    err++;
+                                    err=1;
                                     //*********** !!! НЕ УДАЛЯТЬ! ***********************//
                                     //sails.log('rowNumber');
                                     //sails.log(range.rowNumber());
@@ -200,7 +201,7 @@ module.exports = {
                                 let currentCell = range.columnName() + '' + range.rowNumber();
 
                                 // Координаты второй колонки
-                                let twoCell = this.nameTwoColumn+''+range.rowNumber();
+                                let twoCell = this.nameTwoColumn + '' + range.rowNumber();
 
                                 // Данные ячейки
                                 let valueCell = workbook.sheet(0).cell(currentCell).value();
@@ -209,7 +210,7 @@ module.exports = {
                                 // то красим ячейку красным цветом
                                 if (valueCell == undefined) {
                                     if (range.row().cell(this.nameTwoColumn).value() == undefined) {
-                                        err++;
+                                        err=1;
                                         //*********** !!! НЕ УДАЛЯТЬ! ***********************//
                                         //sails.log('rowNumber');
                                         //sails.log(range.rowNumber());
@@ -246,6 +247,7 @@ module.exports = {
                                 // Проверяем, если данные не прошли валидацию,
                                 // то красим ячейку красным цветом
                                 if (valueCell == undefined) {
+                                    err=1;
                                     workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
                                 }
                             });
