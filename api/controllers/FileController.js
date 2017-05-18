@@ -40,8 +40,8 @@ module.exports = {
                 XlsxPopulate.fromFileAsync(files[0].fd)
                     .then((workbook, reject) => {
                         var err = 0;
-                      
-                        
+
+
                         /**
                          * Цвет ячеек с ошибками
                          * @type {string}
@@ -127,18 +127,27 @@ module.exports = {
                          * Именуем диапазоны входящего прайса для удобного разбора
                          * Объект для диапазонов
                          */
-                        function Ranges(name, range) {
+                        function Ranges(name, range, style) {
                             this.name = name;
                             this.range = range;
                             this.nameTwoColumn = 'C';
                             this.pattern = /^\d+$/gi;
+                            this.style = style;
                         }
 
-
+                        /**
+                         * Получить диапазон объекта
+                         * @returns {*}
+                         */
                         Ranges.prototype.getRange = function () {
                             return this.range;
                         };
 
+
+                        /**
+                         * Получить имя диапазона
+                         * @returns {*}
+                         */
                         Ranges.prototype.getName = function () {
                             return this.name;
                         };
@@ -166,7 +175,7 @@ module.exports = {
                                 // Проверяем, если данные не прошли валидацию,
                                 // то красим ячейку красным цветом
                                 if (valueCell.match(this.pattern) == undefined) {
-                                    err=1;
+                                    err = 1;
                                     //*********** !!! НЕ УДАЛЯТЬ! ***********************//
                                     //sails.log('rowNumber');
                                     //sails.log(range.rowNumber());
@@ -177,6 +186,100 @@ module.exports = {
                                     //sails.log('sheet');
                                     //sails.log(range.sheet().value());
                                     workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                }
+                            });
+                            if (err) return err;
+                        };
+
+
+                        /**
+                         * Переводит строку в верхний регистр
+                         * @returns {string}
+                         */
+                        Ranges.prototype.toUppCase = function () {
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = `${range.value()}`;
+                                if (valueCell !== 'undefined') {
+                                    workbook.sheet(0).cell(currentCell).value(valueCell.toUpperCase());
+                                }
+
+
+                            });
+                        };
+
+
+                        /**
+                         * Режит строку длинее lengths
+                         * @returns {string}
+                         */
+                        Ranges.prototype.toStringCut = function (lengths) {
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = `${range.value()}`;
+
+                                if (valueCell !== 'undefined') {
+                                    workbook.sheet(0).cell(currentCell).value(valueCell.substring(0,lengths+1));
+                                }
+                            });
+                        };
+
+
+
+                        /**
+                         * Валидация ячеек диапазона.
+                         * Ячейка должна содержать только одно значение из входящего массива
+                         * @param arr
+                         * @returns {number}
+                         */
+                        Ranges.prototype.validationOneElementColumn = function (arr) {
+
+                            // Проходим по всем ячейкам диапазона текужего объекта
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = `${range.value()}`;
+
+                                let e = valueCell.split(',');
+                                let e2 = valueCell.split(' ');
+
+                                // Проверяем, если данные не прошли валидацию,
+                                // то красим ячейку красным цветом
+                                if (e.length > 1 || e2.length > 1) {
+                                    err = 1;
+                                    //*********** !!! НЕ УДАЛЯТЬ! ***********************//
+                                    //sails.log('rowNumber');
+                                    //sails.log(range.rowNumber());
+                                    //sails.log('row');
+                                    //sails.log(range.row().cell(4).value());
+                                    //sails.log('columnName');
+                                    //sails.log(range.columnName() + '' + range.rowNumber());
+                                    //sails.log('sheet');
+                                    //sails.log(range.sheet().value());
+                                    workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                } else {
+                                    let val = e[0];
+                                    if (val !== 'undefined') {
+                                        if (arr.indexOf(val) > -1) {
+                                            workbook.sheet(0).cell(currentCell).value(val);
+                                        } else {
+                                            err = 1;
+                                            workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                        }
+                                    }
                                 }
                             });
                             if (err) return err;
@@ -210,7 +313,7 @@ module.exports = {
                                 // то красим ячейку красным цветом
                                 if (valueCell == undefined) {
                                     if (range.row().cell(this.nameTwoColumn).value() == undefined) {
-                                        err=1;
+                                        err = 1;
                                         //*********** !!! НЕ УДАЛЯТЬ! ***********************//
                                         //sails.log('rowNumber');
                                         //sails.log(range.rowNumber());
@@ -247,7 +350,7 @@ module.exports = {
                                 // Проверяем, если данные не прошли валидацию,
                                 // то красим ячейку красным цветом
                                 if (valueCell == undefined) {
-                                    err=1;
+                                    err = 1;
                                     workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
                                 }
                             });
@@ -255,31 +358,88 @@ module.exports = {
                         };
 
 
-                        //validationRows
+                        /**
+                         * Удаляет из ячейки
+                         * @param pattern
+                         * @returns {number}
+                         */
+                        Ranges.prototype.validationReplaceStringColumn = function (pattern, replace) {
+
+                            // Заменяем паттер, который был по умолчанию в классе
+                            if (pattern) this.pattern = pattern;
+
+                            // Проходим по всем ячейкам диапазона текужего объекта
+                            workbook.sheet(0).range(this.range).forEach(range => {
+
+                                // Координаты текущей ячейки. Например A3 или J55
+                                let currentCell = range.columnName() + '' + range.rowNumber();
+
+                                // Данные ячейки
+                                let valueCell = `${range.value()}`;
+
+                                if (valueCell.match(pattern)) {
+                                    workbook.sheet(0).cell(currentCell).value(replace);
+                                }
+                                // Проверяем, если данные не прошли валидацию,
+                                // то красим ячейку красным цветом
+                                //if (valueCell.match(this.pattern) == undefined) {
+                                //    err=1;
+                                //    //*********** !!! НЕ УДАЛЯТЬ! ***********************//
+                                //    //sails.log('rowNumber');
+                                //    //sails.log(range.rowNumber());
+                                //    //sails.log('row');
+                                //    //sails.log(range.row().cell(4).value());
+                                //    //sails.log('columnName');
+                                //    //sails.log(range.columnName() + '' + range.rowNumber());
+                                //    //sails.log('sheet');
+                                //    //sails.log(range.sheet().value());
+                                //    workbook.sheet(0).cell(currentCell).style("fill", colorErrorCell);
+                                //}
+                            });
+                            if (err) return err;
+                        };
+
+
+                        /**
+                         * Установить стили для диапазона
+                         */
+
+                        Ranges.prototype.setStyle = function () {
+                            workbook.sheet(0).range(this.range).style(this.style);
+                        };
+
 
                         /**
                          * Инициализация объектов диапазона
                          * @type {Ranges}
                          */
-
                         const all = new Ranges('ALL', `A1:J${matrix._numRows}`);
                         const header = new Ranges('HEADER', 'A1:J1');
                         const identifier = new Ranges('ID', `A2:A${matrix._numRows}`);
                         const vendorid = new Ranges('VENDORID', `B2:B${matrix._numRows}`);
                         const vendorid2 = new Ranges('VENDORID2', `C2:C${matrix._numRows}`);
                         const description = new Ranges('DESCRIPTION', `D2:D${matrix._numRows}`);
-                        const status = new Ranges('STATUS', `E2:E${matrix._numRows}`);
+                        const status = new Ranges('STATUS', `E2:E${matrix._numRows}`, {
+                            bold: true,
+                            fontFamily: 'Arial',
+                            numberFormat: 4,
+                            fontSize: 8,
+                            fontColor: 'ff0000',
+                            horizontalAlignment: 'center',
+                            verticalAlignment: 'center'
+                        });
                         const currency = new Ranges('CURRENCY', `F2:F${matrix._numRows}`);
                         const dealerprice = new Ranges('DEALERPRICE', `G2:G${matrix._numRows}`);
                         const specialprice = new Ranges('SPECIALPRICE', `H2:H${matrix._numRows}`);
                         const openprice = new Ranges('OPENPRICE', `I2:I${matrix._numRows}`);
                         const note = new Ranges('NOTE', `J2:J${matrix._numRows}`);
 
+
                         /**
                          * Инициализация имён диапазонов в загружаемом прайсе
                          */
 
-                        // ALL
+                       // ALL
                         workbook.definedName(all.getName(), workbook.sheet(0).range(all.getRange()));
 
                         // HEADER
@@ -329,16 +489,26 @@ module.exports = {
                         /**
                          * VALIDATION
                          */
-                        //err = all.validationRows(/^\d\d\d\d\d$/gi);
                         err = identifier.validationColumn(/^\d\d\d\d\d$/gi);
                         err = vendorid.validationUndefinedTwoColumn('C');
                         err = description.validationUndefinedColumn();
-                        //err = status.validationColumn(/RUR|USD|EUR/g);
+                        err = status.validationReplaceStringColumn(/^NA$/gi, undefined);
+                        err = status.validationOneElementColumn(['SALE', 'EOL', 'DISCOUNTED', 'PROMO', 'CALL', 'NEW']);
                         err = currency.validationColumn(/RUB|USD|EUR|undefined/g);
                         err = dealerprice.validationColumn(/^[1-9]+/g);
                         err = specialprice.validationColumn(/^[1-9]|undefined+/g);
                         err = openprice.validationColumn(/^[1-9]|undefined+/g);
-                        //err = note.validationColumn(/RUR|USD|EUR/g);
+                        err = note.validationColumn(/([-\wа-я_\s?!^:,#№"'+@.])/gi);
+                        note.toStringCut(60);
+
+
+                        /**
+                         * Применить стили для диапазона
+                         */
+
+                        status.setStyle();
+                        status.toUppCase(); // диапазон в верхний регистр
+
 
                         /**
                          * Сверяет кол-во колонок с шаблоном по умолчанию
