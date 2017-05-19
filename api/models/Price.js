@@ -8,25 +8,28 @@
 module.exports = {
   connection: 'remoteMSSQLServer',
   attributes: {
+    iden:{
+      type:'number'
+    },
     vendor: {
       type: 'string',
       required: true,
       minLength: 2,
       maxLength: 50
     },
-    idV: {
+    id: {
       type: 'string',
       required: true,
       minLength: 2,
       maxLength: 50
     },
-    vendorId: {
+    vendor_id: {
       type: 'string',
       required: true,
       minLength: 2,
       maxLength: 50
     },
-    vendorId2: {
+    vendor_id2: {
       type: 'string',
       required: true,
       minLength: 2,
@@ -50,19 +53,19 @@ module.exports = {
       minLength: 2,
       maxLength: 50
     },
-    dealerPrice: {
+    dealer_price: {
       type: 'string',
       required: true,
       minLength: 2,
       maxLength: 50
     },
-    specialPrice: {
+    special_price: {
       type: 'string',
       required: true,
       minLength: 2,
       maxLength: 50
     },
-    openPrice: {
+    open_price: {
       type: 'string',
       required: true,
       minLength: 2,

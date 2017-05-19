@@ -32,11 +32,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  //'GET /file':'FileController.index',
-  'POST /file/upload':'FileController.upload',
-  'POST /get/report':'FileController.download',
+  'POST /file/upload':'PriceController.upload',
+  'POST /get/report':'PriceController.download',
 
-  'POST /upload':'PriceController.testPrice',
 
 
 
