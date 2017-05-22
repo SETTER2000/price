@@ -25,7 +25,7 @@ module.exports = {
                 /**
                  * Наименование вендора
                  */
-                const vendor = files[0].filename;
+                const vendor = files[0].filename.slice(0, -5);
 
 
                 /**
@@ -39,8 +39,8 @@ module.exports = {
                         return a.indexOf(i) < 0;
                     });
                 };
-                sails.log('FILE: ');
-                sails.log(path.basename(files[0].fd));
+                //sails.log('FILE: ');
+                //sails.log(path.basename(files[0].fd));
 
 
                 // Загрузить существующую книгу
@@ -154,6 +154,7 @@ module.exports = {
                             this.error = {};
                             this.currentError = 0;
                             this.arrRowsError = [];
+                            this.arrRowsValid = [];
                         }
 
 
@@ -260,8 +261,6 @@ module.exports = {
                          */
                         Ranges.prototype.toStringCut = function (lengths) {
                             workbook.sheet(0).range(this.range).forEach(range => {
-
-
 
                                 // Координаты текущей ячейки. Например A3 или J55
                                 let currentCell = range.columnName() + '' + range.rowNumber();
@@ -544,6 +543,7 @@ module.exports = {
                         err = identifier.validationColumn(/^\d\d\d\d\d$/gi);
                         err = vendorid.validationUndefinedTwoColumn('C');
                         err = description.validationUndefinedColumn();
+                        description.toStringCut(100);
                         err = header.validationUndefinedColumn();
                         status.validationReplaceStringColumn(/^NA$/gi, undefined);
                         status.toUppCase(); // диапазон в верхний регистр
@@ -578,14 +578,82 @@ module.exports = {
                             openprice.arrRowsError,
                             note.arrRowsError
                         );
-
+                        //sails.log('Все ошибки в строках: ' + all.arrRowsError);
                         //sails.log(all.arrRowsError.length);
 
 
                         /**
-                         * Всего корректных строк в книге
+                         * Собираем коллекцию объектов валидных строк из входящего прайса
                          */
-                        Ranges.prototype.getAllValidRows = function () {
+                        Ranges.prototype.setObjectRowsValid = function () {
+                            for (let i = 2; i < allRows; i++) {
+                                if (this.arrRowsError.indexOf(i) < 0) {
+                                    let o = {};
+                                    for (let y = 1; y < 11; y++) {
+                                        let nameColumnHeader = workbook.sheet(0).row(1).cell(y).value();
+                                        //sails.log(nameColumnHeader);
+                                        switch (nameColumnHeader) {
+                                            case 'ID':
+                                                nameColumnHeader = 'dax_id';
+                                                break;
+                                            case 'VendorID':
+                                                nameColumnHeader = 'vendor_id';
+                                                break;
+                                            case 'VendorID 2':
+                                                nameColumnHeader = 'vendor_id2';
+                                                break;
+                                            case 'Description':
+                                                nameColumnHeader = 'description';
+                                                break;
+                                            case 'Status':
+                                                nameColumnHeader = 'status';
+                                                break;
+                                            case 'Currency':
+                                                nameColumnHeader = 'currency';
+                                                break;
+                                            case 'DealerPrice':
+                                                nameColumnHeader = 'dealer_price';
+                                                break;
+                                            case 'SpecialPrice':
+                                                nameColumnHeader = 'special_price';
+                                                break;
+                                            case 'OpenPrice':
+                                                nameColumnHeader = 'open_price';
+                                                break;
+                                            case 'Note':
+                                                nameColumnHeader = 'note';
+                                                break;
+                                        }
+                                        o[nameColumnHeader] = workbook.sheet(0).row(i).cell(y).value();
+                                    }
+                                    if (o !== 'undefined') {
+                                        o['vendor'] = vendor;
+                                        //r.push(o);
+                                        this.arrRowsValid.push(o);
+                                    }
+                                }
+                            }
+                        };
+
+
+                        /**
+                         * Получить коллекцию объектов валидных строк входящего прайса
+                         * @returns {Array}
+                         */
+                        Ranges.prototype.rowsValidArr = function () {
+                            this.setObjectRowsValid();
+                            return this.arrRowsValid;
+                        };
+
+
+                        sails.log(all.rowsValidArr());
+                        //sails.log(all.arrRowsError);
+
+
+                        /**
+                         * Кол-во корректных строк в книге
+                         */
+                        Ranges.prototype.getAllValidCountRows = function () {
                             return (allRows - all.arrRowsError.length);
                         };
 
@@ -609,7 +677,7 @@ module.exports = {
                         Ranges.prototype.getAllValidPercent = function () {
                             //sails.log(allRows);
                             //sails.log(this.arrRowsError.length);
-                            let percent = ( this.getAllValidRows() * 100 / allRows);
+                            let percent = ( this.getAllValidCountRows() * 100 / allRows);
                             return percent.toFixed(3);
                         };
 
@@ -670,29 +738,98 @@ module.exports = {
                         sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
 
 
-                        Price.create({
-                                vendor: vendor,
-                                iden: 3,
-                                id: 2,
-                                vendor_id: 12,
-                                vendor_id2: 23,
-                                description: 'werwer',
-                                status: 'dfsdf',
-                                currency: 'RUB',
-                                special_price: 123,
-                                dealer_price: 123,
-                                open_price: 123,
-                                note: 'sdfs'
-                                //idV: req.param('email'),
-                                //vendorId: req.param('firstName')
-                            },
 
-                            function userCreated(err, newPrice) {
-                                if (err) {
-                                    console.log('err:', err);
-                                }
-                            });
+                        Ranges.prototype.writeDatabase = function () {
+                            let price = this.rowsValidArr();
+                            //let r = [];
+                            //for (let i = 1; i < allRows; i++) {
+                            //    if (this.arrRowsError.indexOf(i) < 0) {
+                            //        let o = {};
+                            //        for (let y = 1; y < 11; y++) {
+                            //            let nameColumnHeader = workbook.sheet(0).row(1).cell(y).value();
+                            //            o[nameColumnHeader] = workbook.sheet(0).row(i).cell(y).value();
+                            //        }
+                            //        if (o !== 'undefined') {
+                            //            r.push(o);
+                            //        }
+                            //    }
+                            //}
+                            for (let key in price) {
+                                sails.log(price[key].dax_id);
+                                sails.log(price[key].vendor_id);
+                                if(price[key].dax_id == 'undefined') return;
+                                Price.findOne({dax_id: + price[key].dax_id}).exec(function idDax(err, daxid) {
+                                    //if (err) return res.view('public/header', {layout: 'homepage'});
+                                    if (err) return res.negotiate(err);
+                                    if (!daxid) {
+                                        Price.create(price[key],
+                                            function userCreated(err, newPrice) {
+                                                if (err) {
+                                                    console.log('err:', err);
+                                                }
+                                            });
+                                    }
 
+                                    //Price.update({dax_id: + price[key].dax_id}, price[key],
+                                    //    function userCreated(err, newPrice) {
+                                    //        if (err) {
+                                    //            console.log('err:', err);
+                                    //        }
+                                    //    });
+                                });
+                            }
+
+
+                        };
+
+                        all.writeDatabase();
+
+
+
+
+                        //Price.findOne({dax_id: dax_id}).exec(function idDax(err, daxid) {
+                        //    //if (err) return res.view('public/header', {layout: 'homepage'});
+                        //    if (err) return res.negotiate(err);
+                        //    if (!daxid) {
+                        //        Price.create({
+                        //                vendor: vendor,
+                        //                dax_id: dax_id,
+                        //                vendor_id: 112,
+                        //                vendor_id2: 23,
+                        //                description: 'werwer',
+                        //                status: 'dfsdf',
+                        //                currency: 'RUB',
+                        //                special_price: 1123,
+                        //                dealer_price: 11123,
+                        //                open_price: 123,
+                        //                note: 'sdfs'
+                        //            },
+                        //            function userCreated(err, newPrice) {
+                        //                if (err) {
+                        //                    console.log('err:', err);
+                        //                }
+                        //            });
+                        //    }
+                        //
+                        //    Price.update({dax_id: dax_id}, {
+                        //            vendor: vendor,
+                        //            vendor_id: 122,
+                        //            vendor_id2: 233,
+                        //            description: 'werwer',
+                        //            status: 'dfsdf',
+                        //            currency: 'RUB',
+                        //            special_price: 123,
+                        //            dealer_price: 123,
+                        //            open_price: 123,
+                        //            note: 'sdfs',
+                        //            updatedAt: new Date()
+                        //        },
+                        //        function userCreated(err, newPrice) {
+                        //            if (err) {
+                        //                console.log('err:', err);
+                        //            }
+                        //        });
+                        //});
 
                         /**
                          * Массив

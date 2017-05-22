@@ -6,77 +6,52 @@
  */
 
 module.exports = {
-  connection: 'remoteMSSQLServer',
-  attributes: {
-    iden:{
-      type:'number'
-    },
-    vendor: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    id: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    vendor_id: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    vendor_id2: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    description: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    status: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    currency: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    dealer_price: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    special_price: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    open_price: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
-    },
-    note: {
-      type: 'string',
-      required: true,
-      minLength: 2,
-      maxLength: 50
+    connection: 'remoteMSSQLServer',
+    schema: true,
+    //autoUpdatedAt:false,
+    attributes: {
+        vendor: {
+            type: 'string',
+            required: true
+        },
+        dax_id: {
+            type: 'integer',
+            required: true
+            //  maxLength: 50
+        },
+        vendor_id: {
+            type: 'string',
+            required: true
+        },
+        vendor_id2: {
+            type: 'string',
+            required: true
+        },
+        description: {
+            type: 'string',
+            required: true
+        },
+        status: {
+            type: 'string'
+        },
+        currency: {
+            type: 'string',
+            required: true
+        },
+        dealer_price: {
+            type: 'string',
+            required: true
+        },
+        special_price: {
+            type: 'string'
+        },
+        open_price: {
+            type: 'string',
+            required: true
+        },
+        note: {
+            type: 'string'
+        }
     }
-  }
 };
 
