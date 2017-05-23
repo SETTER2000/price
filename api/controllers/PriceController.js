@@ -540,19 +540,19 @@ module.exports = {
                         /**
                          * VALIDATION
                          */
-                        err = identifier.validationColumn(/^\d\d\d\d\d$/gi);
-                        err = vendorid.validationUndefinedTwoColumn('C');
-                        err = description.validationUndefinedColumn();
+                        identifier.validationColumn(/^\d\d\d\d\d$/gi);
+                        vendorid.validationUndefinedTwoColumn('C');
+                        description.validationUndefinedColumn();
                         description.toStringCut(100);
-                        err = header.validationUndefinedColumn();
+                        header.validationUndefinedColumn();
                         status.validationReplaceStringColumn(/^NA$/gi, undefined);
                         status.toUppCase(); // диапазон в верхний регистр
-                        err = status.validationOneElementColumn(['SALE', 'EOL', 'DISCOUNTED', 'PROMO', 'CALL', 'NEW']);
-                        err = currency.validationColumn(/RUB|USD|EUR|undefined/g);
-                        err = dealerprice.validationColumn(/^[1-9]+/g);
-                        err = specialprice.validationColumn(/^[1-9]|undefined+/g);
-                        err = openprice.validationColumn(/^[1-9]|undefined+/g);
-                        err = note.validationColumn(/([-\wа-я_\s?!^:,#№"'+@.])/gi);
+                        status.validationOneElementColumn(['SALE', 'EOL', 'DISCOUNTED', 'PROMO', 'CALL', 'NEW']);
+                        currency.validationColumn(/RUB|USD|EUR|undefined/g);
+                        dealerprice.validationColumn(/^[1-9]+/g);
+                        specialprice.validationColumn(/^[1-9]|undefined+/g);
+                        openprice.validationColumn(/^[1-9]|undefined+/g);
+                        note.validationColumn(/([-\wа-я_\s?!^:,#№"'+@.])/gi);
                         note.toStringCut(60);
 
 
@@ -648,7 +648,7 @@ module.exports = {
                             return this.arrRowsValid;
                         };
 
-                       
+
                         //sails.log('all.rowsValidArr():');
                         //sails.log(all.rowsValidArr());
                         //sails.log(all.arrRowsError);
@@ -719,94 +719,128 @@ module.exports = {
 
 
                         // !!! НЕ УДАЛЯТЬ !!
-                        sails.log('');
-                        sails.log('***********************************');
-                        sails.log('*    Всего ошибок                *');
-                        sails.log('***********************************');
-                        sails.log(all.arrRowsError.length);
-                        sails.log('');
-                        sails.log('***********************************');
-                        sails.log('*    Кол-во ошибок в колонках     *');
-                        sails.log('***********************************');
-                        sails.log('Header: ' + header.currentError + ' Строки: ' + header.arrRowsError);
-                        sails.log('ID: ' + identifier.currentError + ' Строки: ' + identifier.arrRowsError);
-                        sails.log('VendorId: ' + vendorid.currentError + ' Строки: ' + vendorid.arrRowsError);
-                        //sails.log('VendorId2: ' + vendorid2.currentError + ' Строки: ' + vendorid2.arrRowsError);
-                        sails.log('Description: ' + description.currentError + ' Строки: ' + description.arrRowsError);
-                        sails.log('Status: ' + status.currentError + ' Строки: ' + status.arrRowsError);
-                        sails.log('Currency: ' + currency.currentError + ' Строки: ' + currency.arrRowsError);
-                        sails.log('DealerPrice: ' + dealerprice.currentError + ' Строки: ' + dealerprice.arrRowsError);
-                        sails.log('SpecialPrice: ' + specialprice.currentError + ' Строки: ' + specialprice.arrRowsError);
-                        sails.log('OpenPrice: ' + openprice.currentError + ' Строки: ' + openprice.arrRowsError);
-                        sails.log('Note: ' + note.currentError + ' Строки: ' + note.arrRowsError);
-                        sails.log('');
-                        sails.log('**********************************************');
-                        sails.log('* Процентное соотношение загружаемого прайса *');
-                        sails.log('**********************************************');
-                        sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
-                        sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
-                        sails.log('');
+                        //sails.log('');
+                        //sails.log('***********************************');
+                        //sails.log('*    Всего ошибок                *');
+                        //sails.log('***********************************');
+                        //sails.log(all.arrRowsError.length);
+                        //sails.log('');
+                        //sails.log('***********************************');
+                        //sails.log('*    Кол-во ошибок в колонках     *');
+                        //sails.log('***********************************');
+                        //sails.log('Header: ' + header.currentError + ' Строки: ' + header.arrRowsError);
+                        //sails.log('ID: ' + identifier.currentError + ' Строки: ' + identifier.arrRowsError);
+                        //sails.log('VendorId: ' + vendorid.currentError + ' Строки: ' + vendorid.arrRowsError);
+                        ////sails.log('VendorId2: ' + vendorid2.currentError + ' Строки: ' + vendorid2.arrRowsError);
+                        //sails.log('Description: ' + description.currentError + ' Строки: ' + description.arrRowsError);
+                        //sails.log('Status: ' + status.currentError + ' Строки: ' + status.arrRowsError);
+                        //sails.log('Currency: ' + currency.currentError + ' Строки: ' + currency.arrRowsError);
+                        //sails.log('DealerPrice: ' + dealerprice.currentError + ' Строки: ' + dealerprice.arrRowsError);
+                        //sails.log('SpecialPrice: ' + specialprice.currentError + ' Строки: ' + specialprice.arrRowsError);
+                        //sails.log('OpenPrice: ' + openprice.currentError + ' Строки: ' + openprice.arrRowsError);
+                        //sails.log('Note: ' + note.currentError + ' Строки: ' + note.arrRowsError);
+                        //sails.log('');
+                        //sails.log('**********************************************');
+                        //sails.log('* Процентное соотношение загружаемого прайса *');
+                        //sails.log('**********************************************');
+                        //sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
+                        //sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
+                        //sails.log('');
 
-                        Ranges.prototype.writeDatabase = function () {
-                            let price = all.rowsValidArr();
-                            sails.log('PRICE LENGTH:');
-                            sails.log(price.length);
-                            //sails.log('PRICE:');
-                            //sails.log(price);
-
-
-
+                        var t = 0;
+                        //Ranges.prototype.writeDatabase = function () {
+                        let price = all.rowsValidArr();
+                        if (price.length > 0) {
                             for (let k = 0; k < price.length; k++) {
-                                //sails.log('price[k].dax_id:');
-                                //sails.log(price[k].dax_id);
-                                //sails.log('price[k].vendor_id:');
-                                //sails.log(price[k].vendor_id);
-                                //sails.log('vendor:');
-                                //sails.log(price[k].vendor);
-                                Price.findOne({dax_id: price[k].dax_id}).exec(function idDax(err, daxid) {
-                                    if (err) return res.negotiate(err);
-                                    if (!daxid) {
-                                        Price.create(price[k],
-                                            function userCreated(err, newPrice) {
+                                Price.findOne({dax_id: price[k].dax_id}).exec(function idDax(err, find) {
+                                        if (err) return res.negotiate(err);
+
+                                        if (!find) {
+                                            Price.create(price[k], function userCreated(err, created) {
                                                 if (err) {
-                                                    console.log('err:', err);
+                                                    console.log('err 4444:', err);
+                                                    return res.serverError(err);
+                                                }
+                                                if (!created) {
+
+                                                } else {
+                                                    sails.log('Новый созданный элемент с dax_id: ');
+                                                    sails.log(created);
                                                 }
                                             });
-                                    }
+                                        }
+                                        else {
+                                            Price.update({dax_id: price[k].dax_id}, price[k]).exec(
+                                                function userCreated(err, update) {
+                                                    if (err) {
+                                                        return res.badRequest({
+                                                            message: 'Подключение к БД потеряно.'
+                                                        });
+                                                        //return res.badRequest('Ошибки при обновлении объекта dax_id: ' + price[k].dax_id + '!');
+                                                    }
+                                                    if (!update) {
 
-                                    Price.update({dax_id: + price[k].dax_id}, price[k],
-                                        function userCreated(err, newPrice) {
-                                            if (err) {
-                                                console.log('err:', err);
-                                            }
-                                        });
+                                                    } else {
+                                                        sails.log('Новый созданный элемент с dax_id: ');
+                                                        sails.log(update);
+                                                    }
+                                                    //console.log('Обновлённый элемент с dax_id: ');
+                                                    //console.log(update[0].dax_id);
+                                                });
+                                        }
+
+
+                                    }
+                                );
+                            }
+                            if (all.arrRowsError.length) {
+                                workbook.toFileAsync(pathToReport);
+                                return res.badRequest({
+                                    message: 'Файл не принят есть ошибки. Скачайте отчёт, ' +
+                                    'исправьте помеченые красным ячейки и загрузите снова.',
+                                    avatarFd: nameFileUpload,
+                                    goReport: true
+                                });
+                            } else {
+                                return res.ok({
+                                    files: files,
+                                    textParams: req.params.all(),
+                                    goReport: false
                                 });
                             }
-                        };
+                        }
 
-                        all.writeDatabase();
 
+
+                        //};
+
+
+                        //all.writeDatabase();
 
 
                         /**
                          * Массив
                          * @type {Array}
                          */
-                        if (all.arrRowsError.length) {
-                            workbook.toFileAsync(pathToReport);
-                            return res.badRequest({
-                                message: 'Файл не принят есть ошибки. Скачайте отчёт, ' +
-                                'исправьте помеченые красным ячейки и загрузите снова.',
-                                avatarFd: nameFileUpload,
-                                goReport: true
-                            });
-                        }
-                        return res.ok({
-                            files: files,
-                            textParams: req.params.all(),
-                            goReport: false
-                        });
+                        //if (all.arrRowsError.length) {
+                        //    workbook.toFileAsync(pathToReport);
+                        //    return res.badRequest({
+                        //        message: 'Файл не принят есть ошибки. Скачайте отчёт, ' +
+                        //        'исправьте помеченые красным ячейки и загрузите снова.',
+                        //        avatarFd: nameFileUpload,
+                        //        goReport: true
+                        //    });
+                        //} else {
+                        //    return res.ok({
+                        //        files: files,
+                        //        textParams: req.params.all(),
+                        //        goReport: false
+                        //    });
+                        //}
+
                     });
+
+
             });
     },
     download: function (req, res) {

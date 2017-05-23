@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-    connection: 'remoteMSSQLServer',
+    connection: 'userMongodbServer',
     schema: true,
     //autoUpdatedAt:false,
     attributes: {

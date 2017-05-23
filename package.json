@@ -30,6 +30,8 @@
     "sails-disk": "~0.10.9",
     "sails-generate-static": "^0.11.3",
     "sails-mssqlserver": "^0.14.3",
+    "sails-mongo": "^0.12.2",
+    "sails-mysql": "^0.11.5",
     "save-as": "^0.1.8",
     "skipper-disk": "^0.5.9",
     "xlsx": "^0.10.1",
