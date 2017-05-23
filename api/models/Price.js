@@ -20,12 +20,10 @@ module.exports = {
             //  maxLength: 50
         },
         vendor_id: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         vendor_id2: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         description: {
             type: 'string',

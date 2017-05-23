@@ -586,8 +586,9 @@ module.exports = {
                          * Собираем коллекцию объектов валидных строк из входящего прайса
                          */
                         Ranges.prototype.setObjectRowsValid = function () {
-                            for (let i = 2; i < allRows; i++) {
-                                if (this.arrRowsError.indexOf(i) < 0) {
+                            this.arrRowsValid = [];
+                            for (let i = 2; i <= allRows; i++) {
+                                if (all.arrRowsError.indexOf(i) < 0) {
                                     let o = {};
                                     for (let y = 1; y < 11; y++) {
                                         let nameColumnHeader = workbook.sheet(0).row(1).cell(y).value();
@@ -642,11 +643,14 @@ module.exports = {
                          */
                         Ranges.prototype.rowsValidArr = function () {
                             this.setObjectRowsValid();
+                            //sails.log('RRR');
+                            //sails.log(all.arrRowsValid);
                             return this.arrRowsValid;
                         };
 
-
-                        sails.log(all.rowsValidArr());
+                       
+                        //sails.log('all.rowsValidArr():');
+                        //sails.log(all.rowsValidArr());
                         //sails.log(all.arrRowsError);
 
 
@@ -717,6 +721,11 @@ module.exports = {
                         // !!! НЕ УДАЛЯТЬ !!
                         sails.log('');
                         sails.log('***********************************');
+                        sails.log('*    Всего ошибок                *');
+                        sails.log('***********************************');
+                        sails.log(all.arrRowsError.length);
+                        sails.log('');
+                        sails.log('***********************************');
                         sails.log('*    Кол-во ошибок в колонках     *');
                         sails.log('***********************************');
                         sails.log('Header: ' + header.currentError + ' Строки: ' + header.arrRowsError);
@@ -736,33 +745,28 @@ module.exports = {
                         sails.log('**********************************************');
                         sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
                         sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
-
-
+                        sails.log('');
 
                         Ranges.prototype.writeDatabase = function () {
-                            let price = this.rowsValidArr();
-                            //let r = [];
-                            //for (let i = 1; i < allRows; i++) {
-                            //    if (this.arrRowsError.indexOf(i) < 0) {
-                            //        let o = {};
-                            //        for (let y = 1; y < 11; y++) {
-                            //            let nameColumnHeader = workbook.sheet(0).row(1).cell(y).value();
-                            //            o[nameColumnHeader] = workbook.sheet(0).row(i).cell(y).value();
-                            //        }
-                            //        if (o !== 'undefined') {
-                            //            r.push(o);
-                            //        }
-                            //    }
-                            //}
-                            for (let key in price) {
-                                sails.log(price[key].dax_id);
-                                sails.log(price[key].vendor_id);
-                                if(price[key].dax_id == 'undefined') return;
-                                Price.findOne({dax_id: + price[key].dax_id}).exec(function idDax(err, daxid) {
-                                    //if (err) return res.view('public/header', {layout: 'homepage'});
+                            let price = all.rowsValidArr();
+                            sails.log('PRICE LENGTH:');
+                            sails.log(price.length);
+                            //sails.log('PRICE:');
+                            //sails.log(price);
+
+
+
+                            for (let k = 0; k < price.length; k++) {
+                                //sails.log('price[k].dax_id:');
+                                //sails.log(price[k].dax_id);
+                                //sails.log('price[k].vendor_id:');
+                                //sails.log(price[k].vendor_id);
+                                //sails.log('vendor:');
+                                //sails.log(price[k].vendor);
+                                Price.findOne({dax_id: price[k].dax_id}).exec(function idDax(err, daxid) {
                                     if (err) return res.negotiate(err);
                                     if (!daxid) {
-                                        Price.create(price[key],
+                                        Price.create(price[k],
                                             function userCreated(err, newPrice) {
                                                 if (err) {
                                                     console.log('err:', err);
@@ -770,66 +774,19 @@ module.exports = {
                                             });
                                     }
 
-                                    //Price.update({dax_id: + price[key].dax_id}, price[key],
-                                    //    function userCreated(err, newPrice) {
-                                    //        if (err) {
-                                    //            console.log('err:', err);
-                                    //        }
-                                    //    });
+                                    Price.update({dax_id: + price[k].dax_id}, price[k],
+                                        function userCreated(err, newPrice) {
+                                            if (err) {
+                                                console.log('err:', err);
+                                            }
+                                        });
                                 });
                             }
-
-
                         };
 
                         all.writeDatabase();
 
 
-
-
-                        //Price.findOne({dax_id: dax_id}).exec(function idDax(err, daxid) {
-                        //    //if (err) return res.view('public/header', {layout: 'homepage'});
-                        //    if (err) return res.negotiate(err);
-                        //    if (!daxid) {
-                        //        Price.create({
-                        //                vendor: vendor,
-                        //                dax_id: dax_id,
-                        //                vendor_id: 112,
-                        //                vendor_id2: 23,
-                        //                description: 'werwer',
-                        //                status: 'dfsdf',
-                        //                currency: 'RUB',
-                        //                special_price: 1123,
-                        //                dealer_price: 11123,
-                        //                open_price: 123,
-                        //                note: 'sdfs'
-                        //            },
-                        //            function userCreated(err, newPrice) {
-                        //                if (err) {
-                        //                    console.log('err:', err);
-                        //                }
-                        //            });
-                        //    }
-                        //
-                        //    Price.update({dax_id: dax_id}, {
-                        //            vendor: vendor,
-                        //            vendor_id: 122,
-                        //            vendor_id2: 233,
-                        //            description: 'werwer',
-                        //            status: 'dfsdf',
-                        //            currency: 'RUB',
-                        //            special_price: 123,
-                        //            dealer_price: 123,
-                        //            open_price: 123,
-                        //            note: 'sdfs',
-                        //            updatedAt: new Date()
-                        //        },
-                        //        function userCreated(err, newPrice) {
-                        //            if (err) {
-                        //                console.log('err:', err);
-                        //            }
-                        //        });
-                        //});
 
                         /**
                          * Массив
@@ -844,8 +801,6 @@ module.exports = {
                                 goReport: true
                             });
                         }
-
-
                         return res.ok({
                             files: files,
                             textParams: req.params.all(),
