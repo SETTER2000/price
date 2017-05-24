@@ -45,7 +45,7 @@ module.exports = {
 
                 // Загрузить существующую книгу
                 XlsxPopulate.fromFileAsync(files[0].fd)
-                    .then(function(workbook, reject){
+                    .then((workbook, reject) => {
                         if (reject) return res.serverError(reject);
 
                         var err = 0;
