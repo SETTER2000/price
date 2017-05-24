@@ -92,7 +92,7 @@ angular.module('DashboardModule')
             uploader.filters.push({
                 name: 'syncFilter',
                 fn: function (item /*{File|FileLikeObject}*/, options) {
-                    console.log('syncFilter');
+                    //console.log('syncFilter');
                     return this.queue.length < 10;
                 }
             });
@@ -101,7 +101,7 @@ angular.module('DashboardModule')
             uploader.filters.push({
                 name: 'asyncFilter',
                 fn: function (item /*{File|FileLikeObject}*/, options, deferred) {
-                    console.log('asyncFilter');
+                    //console.log('asyncFilter');
                     setTimeout(deferred.resolve, 1e3);
                 }
             });
@@ -147,54 +147,63 @@ angular.module('DashboardModule')
                 console.info('onWhenAddingFileFailed', item, filter, options);
             };
             uploader.onAfterAddingFile = function (fileItem) {
-                console.info('onAfterAddingFile', fileItem);
+                //console.info('onAfterAddingFile', fileItem);
             };
             uploader.onAfterAddingAll = function (addedFileItems) {
-                console.info('onAfterAddingAll', addedFileItems);
+                //console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function (item) {
-                console.info('onBeforeUploadItem', item);
+                //console.info('onBeforeUploadItem', item);
             };
             uploader.onProgressItem = function (fileItem, progress) {
-                console.info('onProgressItem', fileItem, progress);
+                //console.info('onProgressItem', fileItem, progress);
+
             };
             uploader.onProgressAll = function (progress) {
-                console.info('onProgressAll', progress);
+                //console.info('onProgressAll', progress);
             };
             uploader.onSuccessItem = function (fileItem, response, status, headers) {
-                console.info('onSuccessItem', fileItem, response, status, headers);
+                console.info('onSuccessItem', fileItem);
+                console.info('onSuccessItem2', response);
+                console.info('onSuccessItem3', status);
+                console.info('onSuccessItem4', headers);
+                $scope.pathToReport = '/images/price/'+response.avatarFd;
+                $scope.goReport = response.goReport;
+                $scope.date = headers.date;
+                //toastr.success(response.message, '');
+                $scope.statusOk = response.message;
+                //$scope.statusAll = response.message;
             };
             uploader.onErrorItem = function (fileItem, response, status, headers) {
-                return response;
+                $scope.pathToReport = response.avatarFd;
+                $scope.goReport = response.goReport;
+                $scope.statusErr = 'Отклонено';
             };
             uploader.onCancelItem = function (fileItem, response, status, headers) {
+                console.log('uploader.onCancelItem');
+                console.log(status);
                 console.info('onCancelItem', fileItem, response, status, headers);
             };
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
-                console.info('onCompleteItem', fileItem, response, status, headers);
-
+                //console.info('onCompleteItem', fileItem, response, status, headers);
 
                 switch (status){
-                    case 200:
-                        $scope.pathToReport = response.avatarFd;
-                        $scope.goReport = response.goReport;
-                        toastr.success(response.message, 'Ok! ');
-                        break;
                     case 403:
-                        toastr.warning(response.message, 'Внимание! ');
-                        $scope.pathToReport = response.avatarFd;
+                        //toastr.warning(response.message, '');
+                        $scope.pathToReport = '/images/price/'+response.avatarFd;
+                        //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
                         $scope.goReport = response.goReport;
+                        $scope.statusErr = 'Принят частично';
                         break;
                     default:
-                        toastr.error(response.message, 'Ошибка! ');
-                        $scope.pathToReport = response.avatarFd;
-                        $scope.goReport = response.goReport;
+                        //toastr.error(response.message, '');
+
                         break;
                 }
 
             };
-            uploader.onCompleteAll = function () {
-                console.info('onCompleteAll');
+            uploader.onCompleteAll = function (fileItem, response, status, headers) {
+                //console.info('onCompleteAll: '+status);
             };
 
             toastr.options = {

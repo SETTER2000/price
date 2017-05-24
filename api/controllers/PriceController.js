@@ -14,18 +14,45 @@ var workbook = XLSX.readFile('test.xlsx');
 
 module.exports = {
     upload: function (req, res) {
+
+        const pathUpload = 'assets/images/price';
+
         req.file('file').upload({
-                dirname: require('path').resolve(sails.config.appPath, 'assets/images/price')
+                dirname: require('path').resolve(sails.config.appPath, pathUpload)
             },
             function (err, files) {
                 if (err) return res.serverError(err);
                 if (_.isUndefined(files[0])) return res.notFound('Нет файла!');
-                //sails.log(files[0]);
+                sails.log(files[0]);
+
+                /**
+                 * Имя загружаемого файла
+                 */
+                const nameFUpload = files[0].filename;
 
                 /**
                  * Наименование вендора
                  */
-                const vendor = files[0].filename.slice(0, -5);
+                const vendor = nameFUpload.slice(0, -5);
+
+                /**
+                 * Именование статусов
+                 * @type {string}
+                 */
+                const statusSec = 'Принят частично';
+                const statusOk = 'Принят полностью';
+                const statusErr = 'Не принят';
+
+
+                /**
+                 * Формируем название файла отчёта NEW
+                 */
+                var d = new Date();
+                const date = d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear() + '_' +
+                    d.getHours() + '-' + d.getMinutes() + '-' + d.getSeconds();
+                var fname = 'report-' + vendor + '-' + date + '.xlsx';
+
+
 
 
                 /**
@@ -34,6 +61,7 @@ module.exports = {
                  */
                 const nameFileUpload = path.basename(files[0].fd);
                 const pathToReport = "assets/images/price/report/" + nameFileUpload;
+                const pathToReportNew = pathUpload + '/';
                 Array.prototype.diff = function (a) {
                     return this.filter(function (i) {
                         return a.indexOf(i) < 0;
@@ -157,6 +185,20 @@ module.exports = {
                             this.arrRowsValid = [];
                         }
 
+
+                        /**
+                         * Функция создаёт массив с уникальными значениями
+                         * @returns {Array}
+                         */
+
+                        Ranges.prototype.uniqueArray = function () {
+                                var obj = {};
+                                for (var i = 0; i < this.arrRowsError.length; i++) {
+                                    var str = this.arrRowsError[i];
+                                    obj[str] = true; // запомнить строку в виде свойства объекта
+                                }
+                                return Object.keys(obj); // или собрать ключи перебором для IE8-
+                        };
 
                         /**
                          * Создать счётчик
@@ -747,6 +789,34 @@ module.exports = {
                         sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
                         sails.log('');
 
+
+                        /**
+                         * Отчёт NEW
+                         */
+                        XlsxPopulate.fromBlankAsync()
+                            .then(report => {
+                                var status = statusErr;
+                                report.sheet(0).cell("A1").value('Дата и время отчёта (загрузки)');
+                                report.sheet(0).cell("B1").value(date);
+                                report.sheet(0).cell("A2").value('Проверенный файл. Название загружаемого файла');
+                                report.sheet(0).cell("B2").value(nameFUpload);
+                                report.sheet(0).cell("A3").value('Общий статус загрузки');
+                                if (all.arrRowsError.length) {
+                                    status = statusSec;
+                                    report.sheet(0).cell("A4").value('Причина отклонения');
+                                    report.sheet(0).cell("B4").value('Ошибок: ' + all.getAllErrorPercent() + '%');
+                                    report.sheet(0).cell("A5").value('Строки с ошибками ');
+                                    report.sheet(0).cell("B5").value(all.uniqueArray().join(' '));
+                                } else {
+                                    status = statusOk
+                                }
+                                report.sheet(0).cell("B3").value(status);
+
+                                // Write to file.
+                                return report.toFileAsync(pathToReportNew + fname);
+                            });
+
+
                         var t = 0;
                         //Ranges.prototype.writeDatabase = function () {
                         let price = all.rowsValidArr();
@@ -758,7 +828,7 @@ module.exports = {
                                         if (!find) {
                                             Price.create(price[k], function userCreated(err, created) {
                                                 if (err) {
-                                                    console.log('err 4444:', err);
+                                                    //console.log('err 4444:', err);
                                                     return res.serverError(err);
                                                 }
                                                 if (!created) {
@@ -791,22 +861,35 @@ module.exports = {
                                     }
                                 );
                             }
+
+
+                            //fs.open(pathToReportNew+fname, "w+", 0644, function(err, file_handle) {
+                            //    if (!err) {
+                            //
+                            //    } else {
+                            //        console.log("Произошла ошибка при открытии");
+                            //    }
+                            //});
+
+
                             if (all.arrRowsError.length) {
                                 workbook.toFileAsync(pathToReport);
                                 return res.forbidden({
-                                    message: 'Файл частично принят.',
-                                    avatarFd: nameFileUpload,
+                                    message: statusSec,
+                                    //avatarFd: nameFileUpload,
+                                    avatarFd: fname,
                                     goReport: true
                                 });
                             } else {
                                 return res.ok({
-                                    files: files,
+                                    message: statusOk,
+                                    //avatarFd: nameFileUpload,
+                                    avatarFd: fname,
                                     textParams: req.params.all(),
-                                    goReport: false
+                                    goReport: true
                                 });
                             }
                         }
-
 
 
                         //};
