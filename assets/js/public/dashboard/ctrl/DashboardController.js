@@ -172,17 +172,26 @@ angular.module('DashboardModule')
             };
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 console.info('onCompleteItem', fileItem, response, status, headers);
-                if (status > 200) {
-                    toastr.error(response.message, 'Ошибка! Статус ' + status);
-                    $scope.pathToReport = 'http://localhost:1339/images/price/report/'+response.avatarFd;
-                    $scope.goReport = response.goReport;
-                    return;
+
+
+                switch (status){
+                    case 200:
+                        $scope.pathToReport = response.avatarFd;
+                        $scope.goReport = response.goReport;
+                        toastr.success(response.message, 'Ok! ');
+                        break;
+                    case 403:
+                        toastr.warning(response.message, 'Внимание! ');
+                        $scope.pathToReport = response.avatarFd;
+                        $scope.goReport = response.goReport;
+                        break;
+                    default:
+                        toastr.error(response.message, 'Ошибка! ');
+                        $scope.pathToReport = response.avatarFd;
+                        $scope.goReport = response.goReport;
+                        break;
                 }
-                $scope.pathToReport = response.avatarFd;
-                console.log('RESPONSE');
-                console.log(response.avatarFd);
-                $scope.goReport = response.goReport;
-                toastr.success(response.message, 'Ok! Статус ' + status);
+
             };
             uploader.onCompleteAll = function () {
                 console.info('onCompleteAll');

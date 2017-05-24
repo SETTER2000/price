@@ -45,7 +45,7 @@ module.exports = {
 
                 // Загрузить существующую книгу
                 XlsxPopulate.fromFileAsync(files[0].fd)
-                    .then((workbook, reject) => {
+                    .then(function(workbook, reject){
                         if (reject) return res.serverError(reject);
 
                         var err = 0;
@@ -719,33 +719,33 @@ module.exports = {
 
 
                         // !!! НЕ УДАЛЯТЬ !!
-                        //sails.log('');
-                        //sails.log('***********************************');
-                        //sails.log('*    Всего ошибок                *');
-                        //sails.log('***********************************');
-                        //sails.log(all.arrRowsError.length);
-                        //sails.log('');
-                        //sails.log('***********************************');
-                        //sails.log('*    Кол-во ошибок в колонках     *');
-                        //sails.log('***********************************');
-                        //sails.log('Header: ' + header.currentError + ' Строки: ' + header.arrRowsError);
-                        //sails.log('ID: ' + identifier.currentError + ' Строки: ' + identifier.arrRowsError);
-                        //sails.log('VendorId: ' + vendorid.currentError + ' Строки: ' + vendorid.arrRowsError);
-                        ////sails.log('VendorId2: ' + vendorid2.currentError + ' Строки: ' + vendorid2.arrRowsError);
-                        //sails.log('Description: ' + description.currentError + ' Строки: ' + description.arrRowsError);
-                        //sails.log('Status: ' + status.currentError + ' Строки: ' + status.arrRowsError);
-                        //sails.log('Currency: ' + currency.currentError + ' Строки: ' + currency.arrRowsError);
-                        //sails.log('DealerPrice: ' + dealerprice.currentError + ' Строки: ' + dealerprice.arrRowsError);
-                        //sails.log('SpecialPrice: ' + specialprice.currentError + ' Строки: ' + specialprice.arrRowsError);
-                        //sails.log('OpenPrice: ' + openprice.currentError + ' Строки: ' + openprice.arrRowsError);
-                        //sails.log('Note: ' + note.currentError + ' Строки: ' + note.arrRowsError);
-                        //sails.log('');
-                        //sails.log('**********************************************');
-                        //sails.log('* Процентное соотношение загружаемого прайса *');
-                        //sails.log('**********************************************');
-                        //sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
-                        //sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
-                        //sails.log('');
+                        sails.log('');
+                        sails.log('***********************************');
+                        sails.log('*    Всего ошибок                *');
+                        sails.log('***********************************');
+                        sails.log(all.arrRowsError.length);
+                        sails.log('');
+                        sails.log('***********************************');
+                        sails.log('*    Кол-во ошибок в колонках     *');
+                        sails.log('***********************************');
+                        sails.log('Header: ' + header.currentError + ' Строки: ' + header.arrRowsError);
+                        sails.log('ID: ' + identifier.currentError + ' Строки: ' + identifier.arrRowsError);
+                        sails.log('VendorId: ' + vendorid.currentError + ' Строки: ' + vendorid.arrRowsError);
+                        //sails.log('VendorId2: ' + vendorid2.currentError + ' Строки: ' + vendorid2.arrRowsError);
+                        sails.log('Description: ' + description.currentError + ' Строки: ' + description.arrRowsError);
+                        sails.log('Status: ' + status.currentError + ' Строки: ' + status.arrRowsError);
+                        sails.log('Currency: ' + currency.currentError + ' Строки: ' + currency.arrRowsError);
+                        sails.log('DealerPrice: ' + dealerprice.currentError + ' Строки: ' + dealerprice.arrRowsError);
+                        sails.log('SpecialPrice: ' + specialprice.currentError + ' Строки: ' + specialprice.arrRowsError);
+                        sails.log('OpenPrice: ' + openprice.currentError + ' Строки: ' + openprice.arrRowsError);
+                        sails.log('Note: ' + note.currentError + ' Строки: ' + note.arrRowsError);
+                        sails.log('');
+                        sails.log('**********************************************');
+                        sails.log('* Процентное соотношение загружаемого прайса *');
+                        sails.log('**********************************************');
+                        sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
+                        sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
+                        sails.log('');
 
                         var t = 0;
                         //Ranges.prototype.writeDatabase = function () {
@@ -764,8 +764,8 @@ module.exports = {
                                                 if (!created) {
 
                                                 } else {
-                                                    sails.log('Новый созданный элемент с dax_id: ');
-                                                    sails.log(created);
+                                                    //sails.log('Новый созданный элемент с dax_id: ');
+                                                    //sails.log(created);
                                                 }
                                             });
                                         }
@@ -781,23 +781,20 @@ module.exports = {
                                                     if (!update) {
 
                                                     } else {
-                                                        sails.log('Новый созданный элемент с dax_id: ');
-                                                        sails.log(update);
+                                                        //sails.log('Новый созданный элемент с dax_id: ');
+                                                        //sails.log(update);
                                                     }
                                                     //console.log('Обновлённый элемент с dax_id: ');
                                                     //console.log(update[0].dax_id);
                                                 });
                                         }
-
-
                                     }
                                 );
                             }
                             if (all.arrRowsError.length) {
                                 workbook.toFileAsync(pathToReport);
-                                return res.badRequest({
-                                    message: 'Файл не принят есть ошибки. Скачайте отчёт, ' +
-                                    'исправьте помеченые красным ячейки и загрузите снова.',
+                                return res.forbidden({
+                                    message: 'Файл частично принят.',
                                     avatarFd: nameFileUpload,
                                     goReport: true
                                 });
