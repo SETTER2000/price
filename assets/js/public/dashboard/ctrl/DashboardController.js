@@ -206,6 +206,7 @@ angular.module('DashboardModule')
                 //console.info('onCompleteAll: '+status);
             };
 
+
             toastr.options = {
                 "closeButton": true
                 //"debug": false,

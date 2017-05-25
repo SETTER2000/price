@@ -20,15 +20,10 @@
     <!--</div>-->
 <!--</div>-->
 
-
-
-
-
-
 <div class="col-sm-9  col-md-10  col-md-offset-2 col-sm-offset-2">
     <div class="page-header">
         <h1>Прайс лист  <small></small>
-        <a target="_blank" href="/images/price/full/price-all.09-05-2017.xlsx" class="btn  btn-success btn-sm ">Скачать</a>
+        <a target="_blank" href="/images/price/full/price.xlsx" class="btn  btn-default btn-sm ">Скачать</a>
         </h1>
     </div>
     <!--<a href="/upload">Upload</a>-->
@@ -46,7 +41,7 @@
 
         <div class="col-md-3">
 
-            <h3>Загрузить прайс</h3>
+            <!--<h3>Загрузить прайс</h3>-->
 
             <div ng-show="uploader.isHTML5">
                 <!-- 3. nv-file-over uploader="link" over-class="className" -->
@@ -55,11 +50,11 @@
                 <!--</div>-->
 
                 <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
-                <div nv-file-drop="" uploader="uploader" options="{ url: '/file/upload' }">
-                    <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
-                        Drag and Drop
-                    </div>
-                </div>
+                <!--<div nv-file-drop="" uploader="uploader" options="{ url: '/file/upload' }">-->
+                    <!--<div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">-->
+                        <!--Drag and Drop-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
             <!--Загрузка одного файла-->
             <!--<input type="file"  nv-file-select="" uploader="uploader" /><br/>-->
@@ -79,8 +74,8 @@
 
         <div class="col-md-9" style="margin-bottom: 40px">
 
-            <h3>Очередь загрузки</h3>
-            <p>Длина очереди: {{uploader.queue.length}}</p>
+            <!--<h3>Очередь загрузки</h3>-->
+            <!--<p>Длина очереди: {{uploader.queue.length}}</p>-->
 
             <table class="table">
                 <thead>
@@ -138,9 +133,6 @@
                 </tr>
                 </tbody>
             </table>
-
-
-
             <div>
                 <!--<div>-->
                     <!--Прогресс загрузки очереди:-->
@@ -154,7 +146,7 @@
                 <!--<button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">-->
                     <!--<span class="glyphicon glyphicon-ban-circle"></span> Отменить всё-->
                 <!--</button>-->
-                <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                <button type="button" class="btn btn-default btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
                     <span class="glyphicon glyphicon-trash"></span> Очистить всё
                 </button>
             </div>
