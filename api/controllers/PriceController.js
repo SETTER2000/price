@@ -251,26 +251,26 @@ module.exports = {
                              * @returns {number}
                              */
                             Ranges.prototype.validationColumn = function (pattern) {
-                                var counter = this.createCounter();
+                                let counter = this.createCounter();
                                 // Заменяем паттер, который был по умолчанию в классе
                                 if (pattern) this.pattern = pattern;
 
                                 // Проходим по всем ячейкам диапазона текужего объекта
-                                workbook.sheet(0).range(this.range).forEach(function (range) {
-                                    var thas = this;
+                                workbook.sheet(0).range(this.range).forEach(range => {
+
                                     // Координаты текущей ячейки. Например A3 или J55
-                                    var currentCell = range.columnName() + '' + range.rowNumber();
+                                    let currentCell = range.columnName() + '' + range.rowNumber();
 
                                     // Данные ячейки
-                                    var valueCell = '' + range.value();
+                                    let valueCell = `${range.value()}`;
 
                                     // Проверяем, если данные не прошли валидацию,
                                     // то красим ячейку красным цветом
-                                    if (valueCell.match(thas.pattern) == undefined) {
+                                    if (valueCell.match(this.pattern) == undefined) {
                                         // кол-во ошибок
-                                        thas.currentError = counter();
+                                        this.currentError = counter();
 
-                                        thas.arrRowsError.push(range.rowNumber());
+                                        this.arrRowsError.push(range.rowNumber());
 
                                         err = 1;
                                         //*********** !!! НЕ УДАЛЯТЬ! ***********************//
@@ -900,9 +900,9 @@ module.exports = {
                                                                             //});
 
 
-                                                                            return fullPrice.toFileAsync(full + 'price_' + date + '.xlsx')
-                                                                                .then(
-                                                                                    function (fulFilled) {
+                                                                        return    fullPrice.toFileAsync(full + 'price.xlsx')
+                                                                        //return    fullPrice.toFileAsync(full + 'price'+date+'.xlsx')
+                                                                                .then(function (fulFilled) {
 
                                                                                     },
                                                                                     function (error) {
