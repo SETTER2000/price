@@ -256,13 +256,13 @@ module.exports = {
                                 if (pattern) this.pattern = pattern;
 
                                 // Проходим по всем ячейкам диапазона текужего объекта
-                                workbook.sheet(0).range(this.range).forEach(function(range){
-var thas = this;
+                                workbook.sheet(0).range(this.range).forEach(function (range) {
+                                    var thas = this;
                                     // Координаты текущей ячейки. Например A3 или J55
                                     var currentCell = range.columnName() + '' + range.rowNumber();
 
                                     // Данные ячейки
-                                    var valueCell = `${range.value()}`;
+                                    var valueCell = '' + range.value();
 
                                     // Проверяем, если данные не прошли валидацию,
                                     // то красим ячейку красным цветом
@@ -900,7 +900,7 @@ var thas = this;
                                                                             //});
 
 
-                                                                        return    fullPrice.toFileAsync(full + 'price_'+date+'.xlsx')
+                                                                            return fullPrice.toFileAsync(full + 'price_' + date + '.xlsx')
                                                                                 .then(
                                                                                     function (fulFilled) {
 
