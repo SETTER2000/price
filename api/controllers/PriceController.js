@@ -23,7 +23,7 @@ module.exports = {
             function (err, files) {
                 if (err) return res.serverError(err);
                 if (_.isUndefined(files[0])) return res.notFound('Нет файла!');
-                sails.log(files[0]);
+                //sails.log(files[0]);
 
                 /**
                  * Имя загружаемого файла
@@ -903,8 +903,6 @@ module.exports = {
                                                                         return    fullPrice.toFileAsync(full + 'price.xlsx')
                                                                                 .then(function (fulFilled) {
 
-
-                                                                                    sails.log(fulFilled);
                                                                                     },
                                                                                     function (reject) {
                                                                                         // вторая функция - запустится при вызове reject
