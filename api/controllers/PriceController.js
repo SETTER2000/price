@@ -901,15 +901,16 @@ module.exports = {
 
 
                                                                         return    fullPrice.toFileAsync(full + 'price.xlsx')
-                                                                        //return    fullPrice.toFileAsync(full + 'price'+date+'.xlsx')
                                                                                 .then(function (fulFilled) {
 
+
+                                                                                    sails.log(fulFilled);
                                                                                     },
-                                                                                    function (error) {
+                                                                                    function (reject) {
                                                                                         // вторая функция - запустится при вызове reject
                                                                                         // error - аргумент reject
                                                                                         //sails.log(reject);
-                                                                                        sails.log('Promise 55: ' + error);
+                                                                                        sails.log('Prommissss 55 ' + reject);
                                                                                     }
                                                                                 );
                                                                         },
