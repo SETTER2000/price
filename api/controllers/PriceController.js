@@ -256,8 +256,8 @@ module.exports = {
                                 if (pattern) this.pattern = pattern;
 
                                 // Проходим по всем ячейкам диапазона текужего объекта
-                                workbook.sheet(0).range(this.range).forEach(range => {
-
+                                workbook.sheet(0).range(this.range).forEach(function(range){
+var thas = this;
                                     // Координаты текущей ячейки. Например A3 или J55
                                     let currentCell = range.columnName() + '' + range.rowNumber();
 
@@ -266,11 +266,11 @@ module.exports = {
 
                                     // Проверяем, если данные не прошли валидацию,
                                     // то красим ячейку красным цветом
-                                    if (valueCell.match(this.pattern) == undefined) {
+                                    if (valueCell.match(thas.pattern) == undefined) {
                                         // кол-во ошибок
-                                        this.currentError = counter();
+                                        thas.currentError = counter();
 
-                                        this.arrRowsError.push(range.rowNumber());
+                                        thas.arrRowsError.push(range.rowNumber());
 
                                         err = 1;
                                         //*********** !!! НЕ УДАЛЯТЬ! ***********************//
