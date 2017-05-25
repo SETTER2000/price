@@ -259,10 +259,10 @@ module.exports = {
                                 workbook.sheet(0).range(this.range).forEach(function(range){
 var thas = this;
                                     // Координаты текущей ячейки. Например A3 или J55
-                                    let currentCell = range.columnName() + '' + range.rowNumber();
+                                    var currentCell = range.columnName() + '' + range.rowNumber();
 
                                     // Данные ячейки
-                                    let valueCell = `${range.value()}`;
+                                    var valueCell = `${range.value()}`;
 
                                     // Проверяем, если данные не прошли валидацию,
                                     // то красим ячейку красным цветом
