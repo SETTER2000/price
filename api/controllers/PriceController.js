@@ -251,7 +251,7 @@ module.exports = {
                              * @returns {number}
                              */
                             Ranges.prototype.validationColumn = function (pattern) {
-                                let counter = this.createCounter();
+                                var counter = this.createCounter();
                                 // Заменяем паттер, который был по умолчанию в классе
                                 if (pattern) this.pattern = pattern;
 
