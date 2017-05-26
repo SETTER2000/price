@@ -1,37 +1,37 @@
 angular.module('DashboardModule')
     //.constant('baseUrl', 'http://localhost:1337')
-    .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$stateParams', '$resource', '$rootScope',
-        function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader, angularFileUpload, $stateParams, $resource, $rootScope) {
+    .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$interval','$stateParams', '$resource', '$rootScope',
+        function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader,  $interval, angularFileUpload, $stateParams, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
             $scope.nameButton = 'Добавить';
             $scope.isMIME = 1;
             $scope.messMimeErr = '';
             $scope.goReport = false;
-
+            $scope.download = false;
             /*********************************/
 
             $scope.getReport = function (fileName) {
                 console.log('fileName');
                 console.log(fileName);
-                var url = "/images/price/report/"+fileName;
+                var url = "/images/price/report/" + fileName;
                 var oReq = new XMLHttpRequest();
                 oReq.open("GET", url, true);
                 oReq.responseType = "arraybuffer";
 
-                oReq.onload = function(e) {
+                oReq.onload = function (e) {
                     var arraybuffer = oReq.response;
                     var data = new Uint8Array(arraybuffer);
                     var arr = new Array();
-                    if(data.length>0){
-                        alert('URA '+ data.length +' '+ String.fromCharCode(data[0]));
-                    }else{
-                        alert('Нет данных !'+data.length);
+                    if (data.length > 0) {
+                        alert('URA ' + data.length + ' ' + String.fromCharCode(data[0]));
+                    } else {
+                        alert('Нет данных !' + data.length);
                     }
-                    for(var i = 0; i != data.length; ++i){
+                    for (var i = 0; i != data.length; ++i) {
                         arr[i] = String.fromCharCode(data[i]);
                     }
                     var bstr = arr.join("");
-                    var workbook = XLSX.read(bstr, {type:"binary"});
+                    var workbook = XLSX.read(bstr, {type: "binary"});
                     var wopts = {bookType: 'xlsx', bookSST: false, type: 'binary'};
                     var wbout = XLSX.write(workbook, wopts);
                     saveAs(new Blob([s2ab(wbout)], {type: "application/octet-stream"}), "report.xlsx");
@@ -162,12 +162,20 @@ angular.module('DashboardModule')
             uploader.onProgressAll = function (progress) {
                 //console.info('onProgressAll', progress);
             };
+
+            //$scope.$watch('goReport', function (value) {
+            //
+            //    $interval(function () {
+            //        $scope.download=false;
+            //    }, 50000);
+            //} );
+
             uploader.onSuccessItem = function (fileItem, response, status, headers) {
                 console.info('onSuccessItem', fileItem);
                 console.info('onSuccessItem2', response);
                 console.info('onSuccessItem3', status);
                 console.info('onSuccessItem4', headers);
-                $scope.pathToReport = '/images/price/'+response.avatarFd;
+                $scope.pathToReport = '/images/price/' + response.avatarFd;
                 $scope.goReport = response.goReport;
                 $scope.date = headers.date;
                 //toastr.success(response.message, '');
@@ -187,10 +195,10 @@ angular.module('DashboardModule')
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 //console.info('onCompleteItem', fileItem, response, status, headers);
 
-                switch (status){
+                switch (status) {
                     case 403:
                         //toastr.warning(response.message, '');
-                        $scope.pathToReport = '/images/price/'+response.avatarFd;
+                        $scope.pathToReport = '/images/price/' + response.avatarFd;
                         //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
                         $scope.goReport = response.goReport;
                         $scope.statusErr = 'Принят частично';
@@ -203,7 +211,8 @@ angular.module('DashboardModule')
 
             };
             uploader.onCompleteAll = function (fileItem, response, status, headers) {
-                //console.info('onCompleteAll: '+status);
+
+                //console.info('onCompleteAll: '+response);
             };
 
 
