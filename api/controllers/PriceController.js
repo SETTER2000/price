@@ -855,74 +855,7 @@ module.exports = {
                                                             return res.serverError(err);
                                                         }
                                                         if (created) {
-                                                            Price.find().exec(function (err, records) {
-                                                                if (err) return res.badRequest(err);
-                                                                if (!records) return res.notFound();
-                                                                XlsxPopulate.fromFileAsync(templateOutPricePath)
-                                                                    .then(
-                                                                        function (fullPrice) {
-                                                                            //if (reject) return res.serverError(reject);
 
-                                                                            //fullPrice.sheet(0).row(1).cell(1).value('Vendor');
-                                                                            //fullPrice.sheet(0).row(1).cell(2).value(sails.config.vendor.arrNameColumnsIdeal[0]);
-                                                                            //fullPrice.sheet(0).row(1).cell(3).value(sails.config.vendor.arrNameColumnsIdeal[1]);
-                                                                            //fullPrice.sheet(0).row(1).cell(4).value(sails.config.vendor.arrNameColumnsIdeal[2]);
-                                                                            //fullPrice.sheet(0).row(1).cell(5).value(sails.config.vendor.arrNameColumnsIdeal[3]);
-                                                                            //fullPrice.sheet(0).row(1).cell(6).value(sails.config.vendor.arrNameColumnsIdeal[4]);
-                                                                            //fullPrice.sheet(0).row(1).cell(7).value(sails.config.vendor.arrNameColumnsIdeal[5]);
-                                                                            //fullPrice.sheet(0).row(1).cell(8).value(sails.config.vendor.arrNameColumnsIdeal[6]);
-                                                                            //fullPrice.sheet(0).row(1).cell(9).value(sails.config.vendor.arrNameColumnsIdeal[7]);
-                                                                            //fullPrice.sheet(0).row(1).cell(10).value(sails.config.vendor.arrNameColumnsIdeal[8]);
-                                                                            //fullPrice.sheet(0).row(1).cell(11).value(sails.config.vendor.arrNameColumnsIdeal[9]);
-                                                                            for (var str = 0; str < records.length; str++) {
-                                                                                var io = str + 2;
-                                                                                fullPrice.sheet(0).row(io).cell(1).value(records[str].vendor);
-                                                                                fullPrice.sheet(0).row(io).cell(2).value(records[str].dax_id);
-                                                                                fullPrice.sheet(0).row(io).cell(3).value(records[str].vendor_id);
-                                                                                fullPrice.sheet(0).row(io).cell(4).value(records[str].vendor_id2);
-                                                                                fullPrice.sheet(0).row(io).cell(5).value(records[str].description);
-                                                                                fullPrice.sheet(0).row(io).cell(6).value(records[str].status);
-                                                                                fullPrice.sheet(0).row(io).cell(7).value(records[str].currency);
-                                                                                fullPrice.sheet(0).row(io).cell(8).value(records[str].dealer_price);
-                                                                                fullPrice.sheet(0).row(io).cell(9).value(records[str].special_price);
-                                                                                fullPrice.sheet(0).row(io).cell(10).value(records[str].open_price);
-                                                                                fullPrice.sheet(0).row(io).cell(11).value(records[str].note);
-                                                                            }
-                                                                            //fullPrice.sheet(0).row(1).style("bold", true);
-                                                                            //fullPrice.sheet(0).range('A1:K1').style("fill", {
-                                                                            //    type: "pattern",
-                                                                            //    pattern: "lightGray",
-                                                                            //    foreground: {
-                                                                            //        rgb: "cccccc"
-                                                                            //    },
-                                                                            //    background: {
-                                                                            //        theme: 3,
-                                                                            //        tint: 0.9
-                                                                            //    }
-                                                                            //});
-
-
-                                                                            return fullPrice.toFileAsync(full + 'price.xlsx')
-                                                                                .then(function (fulFilled) {
-
-                                                                                    },
-                                                                                    function (reject) {
-                                                                                        // вторая функция - запустится при вызове reject
-                                                                                        // error - аргумент reject
-                                                                                        //sails.log(reject);
-                                                                                        //sails.log('Prommissss 55 ' + reject);
-                                                                                        //if (reject) return res.notFound(reject);
-                                                                                    }
-                                                                                );
-                                                                        },
-                                                                        function (reject) {
-                                                                            // вторая функция - запустится при вызове reject
-                                                                            // error - аргумент reject
-                                                                            //sails.log(reject);
-                                                                            sails.log('Ошибка  promise' + reject);
-
-                                                                        });
-                                                            });
                                                         }
                                                     });
                                                 }
@@ -948,6 +881,75 @@ module.exports = {
                                             });
                                         }
 
+
+
+                                        Price.find().exec(function (err, records) {
+                                            if (err) return res.badRequest(err);
+                                            if (!records) return res.notFound();
+                                            XlsxPopulate.fromFileAsync(templateOutPricePath)
+                                                .then(
+                                                    function (fullPrice) {
+                                                        //if (reject) return res.serverError(reject);
+
+                                                        //fullPrice.sheet(0).row(1).cell(1).value('Vendor');
+                                                        //fullPrice.sheet(0).row(1).cell(2).value(sails.config.vendor.arrNameColumnsIdeal[0]);
+                                                        //fullPrice.sheet(0).row(1).cell(3).value(sails.config.vendor.arrNameColumnsIdeal[1]);
+                                                        //fullPrice.sheet(0).row(1).cell(4).value(sails.config.vendor.arrNameColumnsIdeal[2]);
+                                                        //fullPrice.sheet(0).row(1).cell(5).value(sails.config.vendor.arrNameColumnsIdeal[3]);
+                                                        //fullPrice.sheet(0).row(1).cell(6).value(sails.config.vendor.arrNameColumnsIdeal[4]);
+                                                        //fullPrice.sheet(0).row(1).cell(7).value(sails.config.vendor.arrNameColumnsIdeal[5]);
+                                                        //fullPrice.sheet(0).row(1).cell(8).value(sails.config.vendor.arrNameColumnsIdeal[6]);
+                                                        //fullPrice.sheet(0).row(1).cell(9).value(sails.config.vendor.arrNameColumnsIdeal[7]);
+                                                        //fullPrice.sheet(0).row(1).cell(10).value(sails.config.vendor.arrNameColumnsIdeal[8]);
+                                                        //fullPrice.sheet(0).row(1).cell(11).value(sails.config.vendor.arrNameColumnsIdeal[9]);
+                                                        for (var str = 0; str < records.length; str++) {
+                                                            var io = str + 2;
+                                                            fullPrice.sheet(0).row(io).cell(1).value(records[str].vendor);
+                                                            fullPrice.sheet(0).row(io).cell(2).value(records[str].dax_id);
+                                                            fullPrice.sheet(0).row(io).cell(3).value(records[str].vendor_id);
+                                                            fullPrice.sheet(0).row(io).cell(4).value(records[str].vendor_id2);
+                                                            fullPrice.sheet(0).row(io).cell(5).value(records[str].description);
+                                                            fullPrice.sheet(0).row(io).cell(6).value(records[str].status);
+                                                            fullPrice.sheet(0).row(io).cell(7).value(records[str].currency);
+                                                            fullPrice.sheet(0).row(io).cell(8).value(records[str].dealer_price);
+                                                            fullPrice.sheet(0).row(io).cell(9).value(records[str].special_price);
+                                                            fullPrice.sheet(0).row(io).cell(10).value(records[str].open_price);
+                                                            fullPrice.sheet(0).row(io).cell(11).value(records[str].note);
+                                                        }
+                                                        //fullPrice.sheet(0).row(1).style("bold", true);
+                                                        //fullPrice.sheet(0).range('A1:K1').style("fill", {
+                                                        //    type: "pattern",
+                                                        //    pattern: "lightGray",
+                                                        //    foreground: {
+                                                        //        rgb: "cccccc"
+                                                        //    },
+                                                        //    background: {
+                                                        //        theme: 3,
+                                                        //        tint: 0.9
+                                                        //    }
+                                                        //});
+
+
+                                                        return fullPrice.toFileAsync(full + 'price.xlsx')
+                                                            .then(function (fulFilled) {
+                                                                    sails.log('price create');
+                                                                },
+                                                                function (reject) {
+                                                                    // вторая функция - запустится при вызове reject
+                                                                    // error - аргумент reject
+                                                                    //sails.log(reject);
+                                                                    sails.log('Prommissss 55 ' + reject);
+                                                                }
+                                                            );
+                                                    },
+                                                    function (reject) {
+                                                        // вторая функция - запустится при вызове reject
+                                                        // error - аргумент reject
+                                                        //sails.log(reject);
+                                                        sails.log('Ошибка  promise' + reject);
+
+                                                    });
+                                        });
 
                                         if (all.arrRowsError.length) {
                                             workbook.toFileAsync(pathToReport);
