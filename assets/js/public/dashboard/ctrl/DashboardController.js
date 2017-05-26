@@ -142,9 +142,6 @@ angular.module('DashboardModule')
             });
 
 
-
-
-
             // CALLBACKS
 
             uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
@@ -208,11 +205,7 @@ angular.module('DashboardModule')
                     toastr.success(response.message, 'Ok! ' );
                     fileItem.progress = response.progress;
                     fileItem.errorPercent = '0';
-                    ////$scope.pathToReport = '/images/price/' + response.avatarFd;
-                    //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
-                    //$scope.goReport = response.goReport;
                     fileItem.statusOk = response.message;
-
                 }
                 switch (response.status) {
                     case 202:
@@ -221,25 +214,16 @@ angular.module('DashboardModule')
                         fileItem.errorPercent = response.errorPercent + '%';
                         fileItem.pathToReport = '/images/price/report/' + response.avatarFd;
                         fileItem.goReport = response.goReport;
-
-                        ////$scope.pathToReport = '/images/price/' + response.avatarFd;
-                        //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
-                        //$scope.goReport = response.goReport;
                         fileItem.statusOk = response.message;
                         break;
-
                 }
-
-
             };
             uploader.onCompleteAll = function (fileItem, response, status, headers) {
-
                 //console.info('onCompleteAll: '+response);
             };
 
             console.log('UPLOADER:');
             console.log(uploader);
-
 
             toastr.options = {
                 "closeButton": true
@@ -258,7 +242,6 @@ angular.module('DashboardModule')
                 //"showMethod": "fadeIn",
                 //"hideMethod": "fadeOut"
             };
-
 
             $scope.$watch('isMIME', function (value) {
                 $scope.isMIME = value;
@@ -306,7 +289,6 @@ angular.module('DashboardModule')
             };
 
             $scope.addNewPrice = function (newPrice, isValid) {
-
 
                 var req = {
                     method: 'POST',

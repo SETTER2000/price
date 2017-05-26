@@ -902,7 +902,7 @@ module.exports = {
                                                                             //});
 
 
-                                                                        return    fullPrice.toFileAsync(full + 'price.xlsx')
+                                                                            return fullPrice.toFileAsync(full + 'price.xlsx')
                                                                                 .then(function (fulFilled) {
 
                                                                                     },
@@ -910,7 +910,8 @@ module.exports = {
                                                                                         // вторая функция - запустится при вызове reject
                                                                                         // error - аргумент reject
                                                                                         //sails.log(reject);
-                                                                                        sails.log('Prommissss 55 ' + reject);
+                                                                                        //sails.log('Prommissss 55 ' + reject);
+                                                                                        //if (reject) return res.notFound(reject);
                                                                                     }
                                                                                 );
                                                                         },
@@ -951,11 +952,11 @@ module.exports = {
                                         if (all.arrRowsError.length) {
                                             workbook.toFileAsync(pathToReport);
                                             return res.ok({
-                                                status:202,
+                                                status: 202,
                                                 message: statusSec,
                                                 avatarFd: nameFileUpload,
-                                                progress:all.getAllValidPercent(),
-                                                errorPercent:all.getAllErrorPercent(),
+                                                progress: all.getAllValidPercent(),
+                                                errorPercent: all.getAllErrorPercent(),
                                                 dateUpload: date2,
                                                 //avatarFd: fname,
                                                 goReport: true
@@ -964,8 +965,8 @@ module.exports = {
                                             return res.ok({
                                                 message: statusOk,
                                                 avatarFd: nameFileUpload,
-                                                progress:all.getAllValidPercent(),
-                                                errorPercent:all.getAllErrorPercent(),
+                                                progress: all.getAllValidPercent(),
+                                                errorPercent: all.getAllErrorPercent(),
                                                 dateUpload: date2,
                                                 //avatarFd: fname,
                                                 textParams: req.params.all(),
