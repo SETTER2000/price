@@ -1,7 +1,7 @@
 angular.module('DashboardModule')
     //.constant('baseUrl', 'http://localhost:1337')
-    .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$interval','$stateParams', '$resource', '$rootScope',
-        function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader,  $interval, angularFileUpload, $stateParams, $resource, $rootScope) {
+    .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$interval', '$stateParams', '$resource', '$rootScope',
+        function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader, $interval, angularFileUpload, $stateParams, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
             $scope.nameButton = 'Добавить';
             $scope.isMIME = 1;
@@ -141,6 +141,10 @@ angular.module('DashboardModule')
                 }
             });
 
+
+
+
+
             // CALLBACKS
 
             uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
@@ -156,12 +160,15 @@ angular.module('DashboardModule')
                 //console.info('onBeforeUploadItem', item);
             };
             uploader.onProgressItem = function (fileItem, progress) {
-                //console.info('onProgressItem', fileItem, progress);
+                console.info('onProgressItem', fileItem, progress);
 
             };
             uploader.onProgressAll = function (progress) {
                 //console.info('onProgressAll', progress);
             };
+
+            //console.log(uploader.queue);
+            //console.log(uploader.queue);
 
             //$scope.$watch('goReport', function (value) {
             //
@@ -169,23 +176,22 @@ angular.module('DashboardModule')
             //        $scope.download=false;
             //    }, 50000);
             //} );
+            //console.log(' uploader.queue :: ');
+            //console.log(uploader.queue);
 
             uploader.onSuccessItem = function (fileItem, response, status, headers) {
-                console.info('onSuccessItem', fileItem);
-                console.info('onSuccessItem2', response);
-                console.info('onSuccessItem3', status);
-                console.info('onSuccessItem4', headers);
-                $scope.pathToReport = '/images/price/' + response.avatarFd;
-                $scope.goReport = response.goReport;
-                $scope.date = headers.date;
-                //toastr.success(response.message, '');
-                $scope.statusOk = response.message;
-                //$scope.statusAll = response.message;
+                //console.info('onSuccessItem', fileItem);
+                //console.info('onSuccessItem2', response);
+                //console.info('onSuccessItem3', status);
+                //console.info('onSuccessItem4', headers);
+
+
             };
             uploader.onErrorItem = function (fileItem, response, status, headers) {
                 $scope.pathToReport = response.avatarFd;
                 $scope.goReport = response.goReport;
                 $scope.statusErr = 'Отклонено';
+                toastr.error(response.message, 'Ошибка! Статус ' + status);
             };
             uploader.onCancelItem = function (fileItem, response, status, headers) {
                 console.log('uploader.onCancelItem');
@@ -194,26 +200,45 @@ angular.module('DashboardModule')
             };
             uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 //console.info('onCompleteItem', fileItem, response, status, headers);
+                console.info('onCompleteItem', fileItem);
+                if (status == 200) {
+                    fileItem.pathToReport = '/images/price/' + response.avatarFd;
+                    fileItem.goReport = response.goReport;
+                    fileItem.dateUpload = response.dateUpload;
+                    toastr.success(response.message, 'Ok! ' );
+                    fileItem.progress = response.progress;
+                    fileItem.errorPercent = '0';
+                    ////$scope.pathToReport = '/images/price/' + response.avatarFd;
+                    //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
+                    //$scope.goReport = response.goReport;
+                    fileItem.statusOk = response.message;
 
-                switch (status) {
-                    case 403:
-                        //toastr.warning(response.message, '');
-                        $scope.pathToReport = '/images/price/' + response.avatarFd;
-                        //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
-                        $scope.goReport = response.goReport;
-                        $scope.statusErr = 'Принят частично';
-                        break;
-                    default:
-                        //toastr.error(response.message, '');
-
-                        break;
                 }
+                switch (response.status) {
+                    case 202:
+                        //toastr.success(response.message, ' Статус ' + response.status);
+                        fileItem.progress = response.progress;
+                        fileItem.errorPercent = response.errorPercent + '%';
+                        fileItem.pathToReport = '/images/price/report/' + response.avatarFd;
+                        fileItem.goReport = response.goReport;
+
+                        ////$scope.pathToReport = '/images/price/' + response.avatarFd;
+                        //$scope.pathToReport = '/images/price/report/'+response.avatarFd;
+                        //$scope.goReport = response.goReport;
+                        fileItem.statusOk = response.message;
+                        break;
+
+                }
+
 
             };
             uploader.onCompleteAll = function (fileItem, response, status, headers) {
 
                 //console.info('onCompleteAll: '+response);
             };
+
+            console.log('UPLOADER:');
+            console.log(uploader);
 
 
             toastr.options = {
@@ -273,7 +298,7 @@ angular.module('DashboardModule')
                 //console.log(promise);
                 promise.then(fullfilled, rejected);
 
-                //toastr.success('Объект удалён.', 'OK! ');
+                toastr.success('Объект удалён.', 'OK! ');
 
                 $scope.namesString = namesArr.join(' ,');
                 $scope.$apply();

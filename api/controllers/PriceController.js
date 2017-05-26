@@ -50,6 +50,8 @@ module.exports = {
                 var d = new Date();
                 const date = d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear() + '_' +
                     d.getHours() + '-' + d.getMinutes() + '-' + d.getSeconds();
+                const date2 = d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear() + ' ' +
+                    d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
                 var fname = 'report-' + vendor + '-' + date + '.xlsx';
 
 
@@ -946,28 +948,26 @@ module.exports = {
                                         }
 
 
-                                        //fs.open(pathToReportNew+fname, "w+", 0644, function(err, file_handle) {
-                                        //    if (!err) {
-                                        //
-                                        //    } else {
-                                        //        console.log("Произошла ошибка при открытии");
-                                        //    }
-                                        //});
-
-
                                         if (all.arrRowsError.length) {
                                             workbook.toFileAsync(pathToReport);
-                                            return res.forbidden({
+                                            return res.ok({
+                                                status:202,
                                                 message: statusSec,
-                                                //avatarFd: nameFileUpload,
-                                                avatarFd: fname,
+                                                avatarFd: nameFileUpload,
+                                                progress:all.getAllValidPercent(),
+                                                errorPercent:all.getAllErrorPercent(),
+                                                dateUpload: date2,
+                                                //avatarFd: fname,
                                                 goReport: true
                                             });
                                         } else {
                                             return res.ok({
                                                 message: statusOk,
-                                                //avatarFd: nameFileUpload,
-                                                avatarFd: fname,
+                                                avatarFd: nameFileUpload,
+                                                progress:all.getAllValidPercent(),
+                                                errorPercent:all.getAllErrorPercent(),
+                                                dateUpload: date2,
+                                                //avatarFd: fname,
                                                 textParams: req.params.all(),
                                                 goReport: true
                                             });
