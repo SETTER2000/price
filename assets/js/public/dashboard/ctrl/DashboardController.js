@@ -1,5 +1,5 @@
 angular.module('DashboardModule')
-    //.constant('baseUrl', 'http://localhost:1337')
+//.constant('baseUrl', 'http://localhost:1337')
     .controller('DashboardController', ['$scope', '$http', 'toastr', '$templateCache', '$window', '$state', 'FileUploader', '$interval', '$stateParams', '$resource', '$rootScope',
         function ($scope, $http, toastr, $templateCache, $window, $state, FileUploader, $interval, angularFileUpload, $stateParams, $resource, $rootScope) {
             $scope.me = window.SAILS_LOCALS.me;
@@ -118,7 +118,7 @@ angular.module('DashboardModule')
                         toastr.error('Расширение файла должно быть xlsx.', 'Ошибка!');
                         return false;
                     }
-
+                    $scope.uploaderButtonPrice = true;
                     return true;
                 }
             });
@@ -202,10 +202,11 @@ angular.module('DashboardModule')
                     fileItem.pathToReport = '/images/price/' + response.avatarFd;
                     fileItem.goReport = response.goReport;
                     fileItem.dateUpload = response.dateUpload;
-                    toastr.success(response.message, 'Ok! ' );
+                    toastr.success(response.message, 'Ok! ');
                     fileItem.progress = response.progress;
                     fileItem.errorPercent = '0';
                     fileItem.statusOk = response.message;
+                   
                 }
                 switch (response.status) {
                     case 202:
@@ -215,11 +216,12 @@ angular.module('DashboardModule')
                         fileItem.pathToReport = '/images/price/report/' + response.avatarFd;
                         fileItem.goReport = response.goReport;
                         fileItem.statusOk = response.message;
+
                         break;
                 }
             };
             uploader.onCompleteAll = function (fileItem, response, status, headers) {
-                //console.info('onCompleteAll: '+response);
+                $scope.uploaderButtonPrice = false;
             };
 
             console.log('UPLOADER:');

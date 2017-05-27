@@ -6,19 +6,15 @@
  */
 
 module.exports = {
-
     logout: function (req, res) {
-
         if (!req.session.me) {
             return res.redirect('/');
         }
-
         User.findOne(req.session.me, function (err, user) {
             if (err) {
                 console.log('error: ', err);
                 return res.negotiate(err);
             }
-
             if (!user) {
                 sails.log.verbose('Session refers to a user who no longer exists- did you delete a user, then try to refresh the page with an open tab logged-in as that user?');
                 return res.view('homepage');
@@ -34,7 +30,6 @@ module.exports = {
         });
     },
     index: function (req,res){
-
         res.writeHead(200, {'content-type': 'text/html'});
         res.end(
             '<form action="http://localhost:1339/file/upload" enctype="multipart/form-data" method="post">'+

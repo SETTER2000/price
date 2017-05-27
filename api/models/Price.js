@@ -33,8 +33,8 @@ module.exports = {
             type: 'string'
         },
         currency: {
-            type: 'string',
-            required: true
+            type: 'string'
+            // required: true
         },
         dealer_price: {
             type: 'string',
@@ -44,8 +44,8 @@ module.exports = {
             type: 'string'
         },
         open_price: {
-            type: 'string',
-            required: true
+            type: 'string'
+            // required: true
         },
         note: {
             type: 'string'
