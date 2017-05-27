@@ -207,13 +207,13 @@ angular.module('DashboardModule')
                     fileItem.errorPercent = '0';
                     fileItem.statusOk = response.message;
                     // fileItem.allEr = response.allEr;
-                   
+
                 }
                 switch (response.status) {
                     case 202:
                         //toastr.success(response.message, ' Статус ' + response.status);
                         fileItem.progress = response.progress;
-                        fileItem.errorPercent = '('+response.errorPercent + '%)';
+                        fileItem.errorPercent = '(' + response.errorPercent + '%)';
                         fileItem.pathToReport = '/images/price/report/' + response.avatarFd;
                         fileItem.goReport = response.goReport;
                         fileItem.statusOk = response.message;
@@ -223,11 +223,24 @@ angular.module('DashboardModule')
                 }
             };
             uploader.onCompleteAll = function (fileItem, response, status, headers) {
+                $scope.getDatePrice();
                 $scope.uploaderButtonPrice = false;
             };
 
             console.log('UPLOADER:');
             console.log(uploader);
+            
+            $scope.getDatePrice = function () {
+                $http.get('/price/date').then(function succesCallback(response) {
+                        $scope.datePrice = response.data;
+                    },
+                    function errorCallback(response) {
+
+                    }
+                );
+            };
+
+            $scope.getDatePrice();
 
             toastr.options = {
                 "closeButton": true

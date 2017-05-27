@@ -47,6 +47,9 @@ module.exports = {
             type: 'string'
             // required: true
         },
+        date_price:{
+            
+        },
         note: {
             type: 'string'
         }
