@@ -80,12 +80,12 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th width="30%">Имя</th>
-                    <th>Дата</th>
-                    <th ng-show="uploader.isHTML5">Размер</th>
-                    <th ng-show="uploader.isHTML5">Принято</th>
-                    <th ng-show="uploader.isHTML5">Ошибок</th>
-                    <th ng-show="uploader.isHTML5">Прогресс</th>
+                    <th class="text-left" width="30%">Имя</th>
+                    <th class="text-center" >Дата</th>
+                    <th class="text-center" ng-show="uploader.isHTML5">Размер</th>
+                    <th class="text-center" ng-show="uploader.isHTML5">Принято</th>
+                    <th class="text-center" ng-show="uploader.isHTML5">Ошибок</th>
+                    <th class="text-center" ng-show="uploader.isHTML5">Прогресс</th>
                     <th class="text-center">Статус</th>
                     <!--<th>Описание ошибки</th>-->
                     <th class="text-center">Отчёт</th>
@@ -93,12 +93,12 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="item in uploader.queue">
-                    <td><strong>{{ item.file.name }}</strong> </td>
-                    <td>{{item.dateUpload}}</td>
-                    <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                    <td>{{item.progress}}%</td>
-                    <td>{{item.allEr}} {{item.errorPercent}}</td>
-                    <td ng-show="uploader.isHTML5">
+                    <td  class="text-left"><strong>{{ item.file.name }}</strong> </td>
+                    <td  class="text-center">{{item.dateUpload}}</td>
+                    <td  class="text-center" ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                    <td  class="text-center">{{item.progress}}%</td>
+                    <td  class="text-center">{{item.allEr}} {{item.errorPercent}}</td>
+                    <td  class="text-center" ng-show="uploader.isHTML5">
                         <div class="progress" style="margin-bottom: 0;">
                             <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
                         </div>

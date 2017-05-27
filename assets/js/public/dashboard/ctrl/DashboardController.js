@@ -206,7 +206,7 @@ angular.module('DashboardModule')
                     fileItem.progress = response.progress;
                     fileItem.errorPercent = '0';
                     fileItem.statusOk = response.message;
-                    fileItem.allEr = response.allEr;
+                    // fileItem.allEr = response.allEr;
                    
                 }
                 switch (response.status) {
