@@ -913,6 +913,7 @@ module.exports = {
                                                                                     errorPercent: all.getAllErrorPercent(),
                                                                                     dateUpload: date2,
                                                                                     uploaderButtonPrice:false,
+                                                                                    allEr:all.arrRowsError.length,
                                                                                     //avatarFd: fname,
                                                                                     goReport: true
                                                                                 });
@@ -924,6 +925,7 @@ module.exports = {
                                                                                     errorPercent: all.getAllErrorPercent(),
                                                                                     dateUpload: date2,
                                                                                     uploaderButtonPrice:false,
+                                                                                    allEr:all.arrRowsError.length,
                                                                                     //avatarFd: fname,
                                                                                     textParams: req.params.all(),
                                                                                     goReport: true

@@ -50,11 +50,11 @@
                 <!--</div>-->
 
                 <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
-                <!--<div nv-file-drop="" uploader="uploader" options="{ url: '/file/upload' }">-->
-                    <!--<div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">-->
-                        <!--Drag and Drop-->
-                    <!--</div>-->
-                <!--</div>-->
+                <div nv-file-drop="" uploader="uploader" options="{ url: '/file/upload' }">
+                    <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
+                        Drag and Drop
+                    </div>
+                </div>
             </div>
             <!--Загрузка одного файла-->
             <!--<input type="file"  nv-file-select="" uploader="uploader" /><br/>-->
@@ -97,7 +97,7 @@
                     <td>{{item.dateUpload}}</td>
                     <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                     <td>{{item.progress}}%</td>
-                    <td>{{item.errorPercent}}</td>
+                    <td>{{item.allEr}} {{item.errorPercent}}</td>
                     <td ng-show="uploader.isHTML5">
                         <div class="progress" style="margin-bottom: 0;">
                             <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
