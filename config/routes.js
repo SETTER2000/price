@@ -37,7 +37,7 @@ module.exports.routes = {
      */
 
     'POST /file/upload': 'PriceController.upload',
-    'POST /get/report': 'PriceController.download',
+    'GET /price/full': 'PriceController.download',
     'GET /price/date': 'PriceController.date',
 
 

@@ -229,9 +229,13 @@ angular.module('DashboardModule')
 
             console.log('UPLOADER:');
             console.log(uploader);
-            
+
             $scope.getDatePrice = function () {
                 $http.get('/price/date').then(function succesCallback(response) {
+                        console.log(response.data);
+                        if (response.data === '00:00:00') {
+                            $scope.uploaderButtonPrice = true;
+                        }
                         $scope.datePrice = response.data;
                     },
                     function errorCallback(response) {
