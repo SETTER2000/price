@@ -15,9 +15,16 @@ XLSX = require('xlsx');
 module.exports = {
     upload: function (req, res) {
 
-        Date.prototype.toLocaleFormat = function(format) {
-            var f = {y : this.getYear() + 1900,m : this.getMonth() + 1,d : this.getDate(),H : this.getHours(),M : this.getMinutes(),S : this.getSeconds()}
-            for(k in f)
+        Date.prototype.toLocaleFormat = function (format) {
+            var f = {
+                y: this.getYear() + 1900,
+                m: this.getMonth() + 1,
+                d: this.getDate(),
+                H: this.getHours(),
+                M: this.getMinutes(),
+                S: this.getSeconds()
+            }
+            for (k in f)
                 format = format.replace('%' + k, f[k] < 10 ? "0" + f[k] : f[k]);
             return format;
         };
@@ -844,14 +851,7 @@ module.exports = {
                             sails.log('Валидный на: ' + all.getAllValidPercent() + '%');
                             sails.log('Ошибок: ' + all.getAllErrorPercent() + '%');
                             sails.log('');
-
-                            sails.log(all.uniqueArray().length + '==' + allRows);
-                            sails.log(all.uniqueArray());
-
-                            sails.log('FFFF');
-                            sails.log(allColumns);
-                            sails.log(((allRows - 1) * allColumns));
-                            sails.log(all.arrRowsError.length);
+                            
 
                             if (all.uniqueArray().length == (allRows - 1)) {
                                 return res.forbidden({
@@ -895,73 +895,74 @@ module.exports = {
                                     function (fullPrice) {
                                         Price.destroy({vendor: vendor}).exec(function (err, destr) {
                                             if (err) sails.log('Ошибка при удалении записей из БД');
-                                            if (destr) {
-                                                let price = all.rowsValidArr();
-                                                if (price.length > 0) {
-                                                    Price.findOrCreate(price, price, function userCreat(err, creat) {
-                                                        if (err) {
-                                                            return res.serverError(err);
-                                                        }
-                                                        Price.find().sort({ vendor : 1 }).exec(function userCreated(err, created) {
-                                                            if (err) {
-                                                                return res.serverError(err);
-                                                            }
-                                                            let io = 0;
-                                                            let u = 0;
-                                                            for (let k = 0; k < created.length; k++) {
-                                                                io = k + 2;
-                                                                fullPrice.sheet(0).row(io).cell(1).value(created[k].vendor);
-                                                                fullPrice.sheet(0).row(io).cell(2).value(created[k].dax_id);
-                                                                fullPrice.sheet(0).row(io).cell(3).value(created[k].vendor_id);
-                                                                fullPrice.sheet(0).row(io).cell(4).value(created[k].vendor_id2);
-                                                                fullPrice.sheet(0).row(io).cell(5).value(created[k].description);
-                                                                fullPrice.sheet(0).row(io).cell(6).value(created[k].status);
-                                                                fullPrice.sheet(0).row(io).cell(7).value(created[k].currency);
-                                                                fullPrice.sheet(0).row(io).cell(8).value(created[k].dealer_price);
-                                                                fullPrice.sheet(0).row(io).cell(9).value(created[k].special_price);
-                                                                fullPrice.sheet(0).row(io).cell(10).value(created[k].open_price);
-                                                                fullPrice.sheet(0).row(io).cell(11).value(created[k].note);
-                                                                u = k + 1;
-                                                                if (created.length == u) {
-                                                                    return fullPrice.toFileAsync(full + 'price.xlsx').then(
-                                                                        function (fulFilled) {
-                                                                            if (all.arrRowsError.length) {
-                                                                                workbook.toFileAsync(pathToReport);
-                                                                                return res.ok({
-                                                                                    status: 202,
-                                                                                    message: statusSec,
-                                                                                    avatarFd: nameFileUpload,
-                                                                                    progress: all.getAllValidPercent(),
-                                                                                    errorPercent: all.getAllErrorPercent(),
-                                                                                    dateUpload: date2,
-                                                                                    uploaderButtonPrice: false,
-                                                                                    allEr: all.arrRowsError.length,
-                                                                                    goReport: true
-                                                                                });
-                                                                            } else {
-                                                                                return res.ok({
-                                                                                    message: statusOk,
-                                                                                    avatarFd: nameFileUpload,
-                                                                                    progress: all.getAllValidPercent(),
-                                                                                    errorPercent: all.getAllErrorPercent(),
-                                                                                    dateUpload: date2,
-                                                                                    uploaderButtonPrice: false,
-                                                                                    allEr: all.arrRowsError.length,
-                                                                                    textParams: req.params.all(),
-                                                                                    goReport: true
-                                                                                });
-                                                                            }
-                                                                        },
-                                                                        function (reject) {
-                                                                            sails.log('Prommissss 55 ' + reject);
-                                                                        }
-                                                                    );
-                                                                }
-                                                            }
-                                                        });
-                                                    });
+                                            let price = all.rowsValidArr();
+                                            if (price.length > 0) {
+                                                Price.findOrCreate(price, price).exec(
+                                                    function userCreat(err, creat) {
+                                                        if (err) return res.negotiate(err);
+                                                        Price.find().sort({vendor: 1}).exec(
+                                                            function userCreated(err, price) {
+                                                                if (err) return res.negotiate(err);
+                                                                if (!price) return res.notFound();
+                                                                let io = 0;
+                                                                async.each(price, function (priceRow, next) {
+                                                                        io=io+2;
+                                                                        fullPrice.sheet(0).row(io).cell(1).value(priceRow.vendor);
+                                                                        fullPrice.sheet(0).row(io).cell(2).value(priceRow.dax_id);
+                                                                        fullPrice.sheet(0).row(io).cell(3).value(priceRow.vendor_id);
+                                                                        fullPrice.sheet(0).row(io).cell(4).value(priceRow.vendor_id2);
+                                                                        fullPrice.sheet(0).row(io).cell(5).value(priceRow.description);
+                                                                        fullPrice.sheet(0).row(io).cell(6).value(priceRow.status);
+                                                                        fullPrice.sheet(0).row(io).cell(7).value(priceRow.currency);
+                                                                        fullPrice.sheet(0).row(io).cell(8).value(priceRow.dealer_price);
+                                                                        fullPrice.sheet(0).row(io).cell(9).value(priceRow.special_price);
+                                                                        fullPrice.sheet(0).row(io).cell(10).value(priceRow.open_price);
+                                                                        fullPrice.sheet(0).row(io).cell(11).value(priceRow.note);
 
-                                                }
+                                                                        return next();
+                                                                    },
+                                                                    function (err) {
+                                                                        if (err) return res.negotiate(err);
+                                                                    });
+
+
+                                                                return fullPrice.toFileAsync(full + 'price.xlsx').then(
+                                                                    function (fulFilled) {
+                                                                        if (all.arrRowsError.length) {
+                                                                            workbook.toFileAsync(pathToReport);
+                                                                            return res.ok({
+                                                                                status: 202,
+                                                                                message: statusSec,
+                                                                                avatarFd: nameFileUpload,
+                                                                                progress: all.getAllValidPercent(),
+                                                                                errorPercent: all.getAllErrorPercent(),
+                                                                                dateUpload: date2,
+                                                                                uploaderButtonPrice: false,
+                                                                                allEr: all.arrRowsError.length,
+                                                                                goReport: true
+                                                                            });
+                                                                        } else {
+                                                                            return res.ok({
+                                                                                message: statusOk,
+                                                                                avatarFd: nameFileUpload,
+                                                                                progress: all.getAllValidPercent(),
+                                                                                errorPercent: all.getAllErrorPercent(),
+                                                                                dateUpload: date2,
+                                                                                uploaderButtonPrice: false,
+                                                                                allEr: all.arrRowsError.length,
+                                                                                textParams: req.params.all(),
+                                                                                goReport: true
+                                                                            });
+                                                                        }
+                                                                    },
+                                                                    function (reject) {
+                                                                        sails.log('Prommissss 55 ' + reject);
+                                                                    }
+                                                                );
+                                                            }
+                                                        )
+                                                        ;
+                                                    });
                                             }
                                         });
                                     },
@@ -988,13 +989,20 @@ module.exports = {
         }).pipe(res);
     },
     date: function (req, res) {
-        Price.find({}, { updatedAt: 1, _id: 0})
-            .limit(1).sort( { updatedAt : -1 } ).exec(function getDatePrice(err, datePrice) {
-            if(err) res.negotiate(err);
+        Price.find({}, {updatedAt: 1, _id: 0})
+            .limit(1).sort({updatedAt: -1}).exec(function getDatePrice(err, datePrice) {
+            if (err) res.negotiate(err);
 
-            Date.prototype.toLocaleFormat = function(format) {
-                var f = {y : this.getYear() + 1900,m : this.getMonth() + 1,d : this.getDate(),H : this.getHours(),M : this.getMinutes(),S : this.getSeconds()}
-                for(k in f)
+            Date.prototype.toLocaleFormat = function (format) {
+                var f = {
+                    y: this.getYear() + 1900,
+                    m: this.getMonth() + 1,
+                    d: this.getDate(),
+                    H: this.getHours(),
+                    M: this.getMinutes(),
+                    S: this.getSeconds()
+                }
+                for (k in f)
                     format = format.replace('%' + k, f[k] < 10 ? "0" + f[k] : f[k]);
                 return format;
             };
