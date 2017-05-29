@@ -577,7 +577,7 @@ module.exports = {
                              * Инициализация имён диапазонов в загружаемом прайсе
                              */
 
-                            // ALL
+                                // ALL
                             workbook.definedName(all.getName(), workbook.sheet(0).range(all.getRange()));
 
                             // HEADER
@@ -961,7 +961,7 @@ module.exports = {
                     );
             });
     },
-    download: function (req, res,next) {
+    download: function (req, res, next) {
         /**
          * Директория где сохраняется общий прайс
          */
@@ -971,18 +971,18 @@ module.exports = {
          * Шаблон для полного прайса
          */
         const templateOutPricePath = "assets/images/price/ideal/full_out.xlsx";
+
         Price.find({}, {updatedAt: 1, _id: 0})
             .limit(1).sort({updatedAt: -1}).exec(function getDatePrice(err, datePrice) {
             if (err) res.negotiate(err);
             if (datePrice.length) {
                 const namePrice = 'price_' + datePrice[0].updatedAt.toLocaleFormat('%d.%m.%y_%H-%M-%S') + '.xlsx';
-                XlsxPopulate.fromFileAsync(templateOutPricePath)
-                    .then(fullPrice => {
-                        Price.find().sort({vendor: 1}).exec(function userCreated(err, price) {
-                            if (err) return res.negotiate(err);
-                            if (!price) return res.notFound();
-                            let io = 1;
-
+                Price.find().sort({vendor: 1}).exec(function userCreated(err, price) {
+                    if (err) return res.negotiate(err);
+                    if (!price) return res.notFound();
+                    let io = 1;
+                    XlsxPopulate.fromFileAsync(templateOutPricePath)
+                        .then(fullPrice => {
                             async.each(price,
                                 function (priceRow, next) {
                                     io++;
@@ -998,14 +998,16 @@ module.exports = {
                                     fullPrice.sheet(0).row(io).cell(10).value(priceRow.open_price);
                                     fullPrice.sheet(0).row(io).cell(11).value(priceRow.note);
 
-                                    return  next();
+                                    return next();
                                 },
                                 function (err) {
                                     if (err) return res.negotiate('ОШИБКА!!!!!');
                                 });
-                            return fullPrice.toFileAsync(pathPrice + namePrice).then(
+                            fullPrice.toFileAsync(pathPrice + namePrice).then(
                                 function (fulFilled) {
-                                    sails.log('OKEY!!');
+
+                                    sails.log('Ok!');
+
                                     // return res.ok({
                                     //     message: 'OK!!!',
                                     //     downloadPrice: namePrice
@@ -1020,45 +1022,16 @@ module.exports = {
                                 },
                                 function (reject) {
                                     sails.log('Prommissss 55 ' + reject);
-                                }
-                            );
-                        });
-                    })
-                    .then(data => {
-                        // Set the output file name.
-                        // location.href = "data:" + XlsxPopulate.MIME_TYPE + ";base64," + data;
-
-                        res.attachment(pathPrice + namePrice);
-                        // res.attachment(pathPrice + namePrice);
-
-                        // Send the workbook.
-                        res.send(data);
-                    })
-                    .catch(next);
-                
+                                });
+                            return fullPrice.outputAsync();
+                        }).then(data => {
+                            res.attachment(pathPrice + namePrice);
+                            res.send(data);
+                        })
+                        .catch(next);
+                });
             }
-
         });
-        // XlsxPopulate.fromFileAsync("input.xlsx")
-        //     .then(workbook => {
-        //         // Make edits.
-        //         workbook.sheet(0).cell("A1").value("foo");
-        //
-        //         // Get the output
-        //         return workbook.outputAsync();
-        //     })
-        //     .then(data => {
-        //         // Set the output file name.
-        //         res.attachment("output.xlsx");
-        //
-        //         // Send the workbook.
-        //         res.send(data);
-        //     })
-        //     .catch(next);
-
-        // 
-      
-
     },
 
 
@@ -1067,13 +1040,11 @@ module.exports = {
             .limit(1).sort({updatedAt: -1}).exec(function getDatePrice(err, datePrice) {
             if (err) res.negotiate(err);
             if (datePrice.length) {
-
-                sails.log(datePrice);
+                //sails.log(datePrice);
                 res.json(datePrice[0].updatedAt.toLocaleFormat('%d.%m.%y %H:%M:%S'));
             } else {
                 res.json(new Date(0, 0, 0, 0, 0, 0).toLocaleFormat('%H:%M:%S'));
             }
-
         });
     }
 };
