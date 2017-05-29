@@ -44,8 +44,8 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/anonymous node/sails user/price.git"
+    "url": "https://github.com/SETTER2000/price"
   },
-  "author": "anonymous node/sails user",
+  "author": "SETTER <info@lphp.ru>",
   "license": ""
 }
