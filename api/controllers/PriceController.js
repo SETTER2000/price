@@ -8,27 +8,22 @@ const XlsxPopulate = require('xlsx-populate');
 var fs = require('fs');
 const path = require('path');
 XLSX = require('xlsx');
-Date.prototype.toLocaleFormat = function (format) {
-    var f = {
-        y: this.getYear() + 1900,
-        m: this.getMonth() + 1,
-        d: this.getDate(),
-        H: this.getHours(),
-        M: this.getMinutes(),
-        S: this.getSeconds()
-    };
-    for (k in f)
-        format = format.replace('%' + k, f[k] < 10 ? "0" + f[k] : f[k]);
-    return format;
-};
-//var _ = require('lodash');
+
+var DateRu = require('date-ru');
+var dt = new Date();
+var dateRuTpl = "%d.%m.%y %H:%M:%S";
+var dateRuTpl2 = "%d.%m.%y_%H-%M-%S";
+var timeRuTpl = '%H:%M:%S';
+var dateRu = new DateRu(dt, dateRuTpl);
+var dateRu2 = new DateRu(dt, dateRuTpl2);
+
+
+
 
 
 module.exports = {
     upload: function (req, res) {
-
         const pathUpload = 'assets/images/price';
-
         req.file('file').upload({
                 dirname: require('path').resolve(sails.config.appPath, pathUpload)
             },
@@ -59,10 +54,8 @@ module.exports = {
                 /**
                  * Формируем название файла отчёта NEW
                  */
-                var d = new Date();
-                const date = d.toLocaleFormat('%d.%m.%y_%H-%M-%S');
-                const date2 = d.toLocaleFormat('%d.%m.%y %H:%M:%S');
-                var fname = 'report-' + vendor + '-' + date + '.xlsx';
+                const date2 = dateRu2.localFormat();
+                var fname = 'report-' + vendor + '-' + dateRu2.localFormat() + '.xlsx';
 
 
                 /**
@@ -856,7 +849,7 @@ module.exports = {
                                     function (report) {
                                         var status = statusErr;
                                         report.sheet(0).cell("A1").value('Дата и время отчёта (загрузки)');
-                                        report.sheet(0).cell("B1").value(date);
+                                        report.sheet(0).cell("B1").value(dateRu.localFormat());
                                         report.sheet(0).cell("A2").value('Проверенный файл. Название загружаемого файла');
                                         report.sheet(0).cell("B2").value(nameFUpload);
                                         report.sheet(0).cell("A3").value('Общий статус загрузки');
@@ -895,7 +888,7 @@ module.exports = {
                                                     avatarFd: nameFileUpload,
                                                     progress: all.getAllValidPercent(),
                                                     errorPercent: all.getAllErrorPercent(),
-                                                    dateUpload: date2,
+                                                    dateUpload:new DateRu(new Date(), dateRuTpl).localFormat(),
                                                     uploaderButtonPrice: false,
                                                     allEr: all.arrRowsError.length,
                                                     goReport: true
@@ -906,7 +899,7 @@ module.exports = {
                                                     avatarFd: nameFileUpload,
                                                     progress: all.getAllValidPercent(),
                                                     errorPercent: all.getAllErrorPercent(),
-                                                    dateUpload: date2,
+                                                    dateUpload: new DateRu(new Date(), dateRuTpl).localFormat(),
                                                     uploaderButtonPrice: false,
                                                     allEr: all.arrRowsError.length,
                                                     textParams: req.params.all(),
@@ -976,7 +969,7 @@ module.exports = {
             .limit(1).sort({updatedAt: -1}).exec(function getDatePrice(err, datePrice) {
             if (err) res.negotiate(err);
             if (datePrice.length) {
-                const namePrice = 'price_' + datePrice[0].updatedAt.toLocaleFormat('%d.%m.%y_%H-%M-%S') + '.xlsx';
+                const namePrice = 'price_' + new DateRu(datePrice[0].updatedAt, dateRuTpl2).localFormat() + '.xlsx';
                 Price.find().sort({vendor: 1}).exec(function userCreated(err, price) {
                     if (err) return res.negotiate(err);
                     if (!price) return res.notFound();
@@ -1041,9 +1034,9 @@ module.exports = {
             if (err) res.negotiate(err);
             if (datePrice.length) {
                 //sails.log(datePrice);
-                res.json(datePrice[0].updatedAt.toLocaleFormat('%d.%m.%y %H:%M:%S'));
+                res.json(new DateRu(datePrice[0].updatedAt, dateRuTpl).localFormat());
             } else {
-                res.json(new Date(0, 0, 0, 0, 0, 0).toLocaleFormat('%H:%M:%S'));
+                res.json(new DateRu(new Date(0, 0, 0, 0, 0, 0), timeRuTpl).localFormat());
             }
         });
     }
